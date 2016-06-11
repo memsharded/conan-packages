@@ -9,7 +9,7 @@ class GlewConan(ConanFile):
     settings = "os", "arch", "build_type", "compiler"
     #options = {"shared": [True, False], "fPIC": [True, False]}
     #default_options = "shared=False", "fPIC=False"
-    url="http://github.com/coging3d/conan-glew"
+    url="http://github.com/coding3d/conan-glew"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
 
