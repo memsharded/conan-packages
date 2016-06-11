@@ -1,0 +1,17 @@
+#Backup files
+*\~
+*swp
+
+#Annoying thumbs file that appears everywhere :)
+Thumbs.db
+
+#Mac DS_Store file
+.DS_Store
+
+#Emacs buffers
+\#*\#
+
+/glew-1.13.0/_build
+conanfile.pyc
+conaninfo.txt
+conanbuildinfo.cmake
