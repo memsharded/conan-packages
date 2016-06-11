@@ -7,8 +7,6 @@ class GlewConan(ConanFile):
     ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "cmake"
     settings = "os", "arch", "build_type", "compiler"
-    #options = {"shared": [True, False], "fPIC": [True, False]}
-    #default_options = "shared=False", "fPIC=False"
     url="http://github.com/coding3d/conan-glew"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
@@ -18,9 +16,6 @@ class GlewConan(ConanFile):
             del self.settings.compiler.libcxx
         except:
             pass
-
-        if self.settings.os == "Windows":
-            self.options.remove("fPIC")
 
     def build(self):
         cmake = CMake(self.settings)
