@@ -31,9 +31,11 @@ class GlewConan(ConanFile):
         except:
             pass
 
+        shared_option = "-DBUILD_SHARED_LIBS=ON" if (self.options.shared) else "-DBUILD_SHARED_LIBS=OFF"
+
         self.run("cd %s && mkdir _build" % self.ZIP_FOLDER_NAME)
         cd_build = "cd %s/_build" % self.ZIP_FOLDER_NAME
-        self.run('%s && cmake ../build/cmake %s' % (cd_build, cmake.command_line))
+        self.run('%s && cmake ../build/cmake %s %s -DBUILD_UTILS=OFF' % (cd_build, cmake.command_line, shared_option))
         self.run("%s && cmake --build . %s" % (cd_build, cmake.build_config))
 
     def package(self):
@@ -55,4 +57,4 @@ class GlewConan(ConanFile):
                 self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ['libglew32']
+        self.cpp_info.libs = ['libglew32'] if (self.options.shared) else ["libglew32_s"]
