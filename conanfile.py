@@ -1,4 +1,4 @@
-from conans import ConanFile, CMake
+from conans import ConanFile, CMake, os
 import os
 
 class GlewConan(ConanFile):
@@ -10,6 +10,7 @@ class GlewConan(ConanFile):
     url="http://github.com/coding3d/conan-glew"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
+    exports = "*"
 
     def config(self):
         try: # Try catch can be removed when conan 0.8 is released
@@ -19,6 +20,15 @@ class GlewConan(ConanFile):
 
     def build(self):
         cmake = CMake(self.settings)
+
+        try:
+            if self.settings.os == "Windows":
+                self.run("cd %s && rd /s /q _build" % self.ZIP_FOLDER_NAME)
+            else:
+                self.run("cd %s && rm -rf _build" % self.ZIP_FOLDER_NAME)
+        except:
+            pass
+
         self.run("cd %s && mkdir _build" % self.ZIP_FOLDER_NAME)
         cd_build = "cd %s/_build" % self.ZIP_FOLDER_NAME
         self.run('%s && cmake ../build/cmake %s' % (cd_build, cmake.command_line))
