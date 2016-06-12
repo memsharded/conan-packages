@@ -12,6 +12,7 @@ Thumbs.db
 \#*\#
 
 /glew-1.13.0/_build
+/test_package/build
 conanfile.pyc
 conaninfo.txt
 conanbuildinfo.cmake

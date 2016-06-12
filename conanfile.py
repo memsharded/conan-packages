@@ -7,6 +7,8 @@ class GlewConan(ConanFile):
     ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "cmake"
     settings = "os", "arch", "build_type", "compiler"
+    options = {"shared": [True, False]}
+    default_options = "shared=False"
     url="http://github.com/coding3d/conan-glew"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
@@ -53,4 +55,4 @@ class GlewConan(ConanFile):
                 self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ['libGLEW']
+        self.cpp_info.libs = ['libglew32']

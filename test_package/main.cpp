@@ -1,5 +1,5 @@
-#include "GL/glew.h"
+#include "glew.h"
 
 int main (void){
-    
+
 }
