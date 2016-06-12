@@ -9,5 +9,3 @@ add_executable(testGlew main.cpp)
 FIND_PACKAGE(GLEW REQUIRED)
 INCLUDE_DIRECTORIES(${GLEW_INCLUDE_DIRS})
 TARGET_LINK_LIBRARIES(testGlew PUBLIC "${GLEW_LIBRARIES}")
-
-# target_link_libraries(testGlew ${CONAN_LIBS})

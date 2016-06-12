@@ -57,4 +57,7 @@ class GlewConan(ConanFile):
                 self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ['libglew32'] if (self.options.shared) else ["libglew32_s"]
+        if self.settings.os == "Windows":
+            self.cpp_info.libs = ['glew32'] if self.options.shared else ['libglew32']
+        else:
+            self.cpp_info.libs = ['libGLEW']
