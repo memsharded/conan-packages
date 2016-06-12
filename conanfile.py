@@ -38,7 +38,7 @@ class GlewConan(ConanFile):
 
     def package(self):
         # Copying headers
-        self.copy("*.h", "include", "%s" % (self.ZIP_FOLDER_NAME), keep_path=False)
+        self.copy("include/*", ".", "%s" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
         # Copying static and dynamic libs
         if self.settings.os == "Windows":

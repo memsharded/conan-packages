@@ -1,4 +1,4 @@
-#include "glew.h"
+#include "GL/glew.h"
 
 int main (void){
 
