@@ -8,7 +8,7 @@ class GlewConan(ConanFile):
     generators = "cmake"
     settings = "os", "arch", "build_type", "compiler"
     options = {"shared": [True, False]}
-    default_options = "shared=True"
+    default_options = "shared=False"
     url="http://github.com/coding3d/conan-glew"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
@@ -31,28 +31,22 @@ class GlewConan(ConanFile):
         except:
             pass
 
-        shared_option = "-DBUILD_SHARED_LIBS=ON" if (self.options.shared) else "-DBUILD_SHARED_LIBS=OFF"
-
         self.run("cd %s && mkdir _build" % self.ZIP_FOLDER_NAME)
         cd_build = "cd %s/_build" % self.ZIP_FOLDER_NAME
-        self.run('%s && cmake ../build/cmake %s %s -DBUILD_UTILS=OFF' % (cd_build, cmake.command_line, shared_option))
+        self.run('%s && cmake ../build/cmake %s -DBUILD_UTILS=OFF' % (cd_build, cmake.command_line))
         self.run("%s && cmake --build . %s" % (cd_build, cmake.build_config))
 
     def package(self):
         # Copying headers
         self.copy("include/*", ".", "%s" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
-        # Copying static and dynamic libs - cannot link statically in Windows at
-        # this point
         if self.settings.os == "Windows":
-            self.copy(pattern="*.dll", dst="bin", src=self.ZIP_FOLDER_NAME, keep_path=False)
-            self.copy(pattern="*.lib", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
-#            if self.options.shared:
-#                self.copy(pattern="*.dll", dst="bin", src=self.ZIP_FOLDER_NAME, keep_path=False)
-#                self.copy(pattern="*.lib", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
-#            else:
-#                self.run("cd %s/_build/lib/%s && del glew* && ren libglew32.lib glew32.lib && ren libglew32mx.lib glew32mx.lib" % (self.ZIP_FOLDER_NAME, self.settings.build_type))
-#                self.copy(pattern="*.lib", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+            if self.options.shared:
+                self.copy(pattern="*.dll", dst="bin", src=self.ZIP_FOLDER_NAME, keep_path=False)
+                self.copy(pattern="*.lib", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+            else:
+                self.run("cd %s/_build/lib/%s && del glew* && ren libglew32.lib glew32.lib && ren libglew32mx.lib glew32mx.lib" % (self.ZIP_FOLDER_NAME, self.settings.build_type))
+                self.copy(pattern="*.lib", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
         else:
             if self.options.shared:
                 if self.settings.os == "Macos":
