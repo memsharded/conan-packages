@@ -8,7 +8,12 @@ add_executable(testGlew main.cpp)
 
 FIND_PACKAGE(GLEW REQUIRED)
 INCLUDE_DIRECTORIES(${GLEW_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES(testGlew PUBLIC "${GLEW_LIBRARIES}")
+
+IF(APPLE)
+  TARGET_LINK_LIBRARIES(testGlew PUBLIC "${GLEW_LIBRARIES}" "-framework OpenGL")
+ELSE()
+  TARGET_LINK_LIBRARIES(testGlew PUBLIC "${GLEW_LIBRARIES}")
+ENDIF()
 
 IF(WIN32)
 add_custom_command(TARGET testGlew POST_BUILD        # Adds a post-build event to MyTest
