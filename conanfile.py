@@ -30,7 +30,7 @@ class GlewConan(ConanFile):
         self.run("%s && cmake --build . %s" % (cd_build, cmake.build_config))
 
     def package(self):
-        # Copying headers
+        self.copy("FindGLEW.cmake", ".", ".")
         self.copy("include/*", ".", "%s" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
         if self.settings.os == "Windows":

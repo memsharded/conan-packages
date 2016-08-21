@@ -10,11 +10,8 @@ class TestGlew(ConanFile):
     requires = "glew/1.13.0@%s/%s" % (username, channel)
     generators = "cmake"
 
-    def config(self):
-        try: # Try catch can be removed when conan 0.8 is released
-            del self.settings.compiler.libcxx
-        except:
-            pass
+    def configure(self):
+        del self.settings.compiler.libcxx
 
     def build(self):
         cmake = CMake(self.settings)
