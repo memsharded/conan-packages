@@ -1,6 +1,6 @@
 # Only building shared library, since the static library would not work
 from conans import ConanFile, CMake, os
-import os
+import os, subprocess
 
 class GlewConan(ConanFile):
     name = "glew"
@@ -13,7 +13,26 @@ class GlewConan(ConanFile):
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
     exports = "*"
 
+    def linux_package_installed(self, package):
+        p = subprocess.Popen(['dpkg', '-s', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        return 'install ok' in out
+
+    def ensure_linux_dependency(self, package):
+        if not self.linux_package_installed(package):
+            self.output.warn(package + " is not installed in this machine! Conan will try to install it.")
+            self.run("sudo apt-get install -y " + package)
+            if not self.linux_package_installed(package):
+                self.output.error(package + " Installation doesn't work... install it manually and try again")
+                exit(1)
+
+    def system_requirements(self):
+        if self.settings.os == "Linux":
+            self.ensure_linux_dependency("mesa-common-dev")
+            self.ensure_linux_dependency("libglu1-mesa-dev")
+                
     def build(self):
+        self.system_requirements()
         cmake = CMake(self.settings)
 
         try:
