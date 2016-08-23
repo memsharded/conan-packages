@@ -21,3 +21,7 @@ class TestGlew(ConanFile):
     def test(self):
         # equal to ./bin/greet, but portable win: .\bin\greet
         self.run(os.sep.join([".","bin", "testGlew"]))
+
+    def imports(self):
+        if self.settings.os == "Windows":
+            self.copy("*.dll", "bin", "bin")
