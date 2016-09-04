@@ -1,4 +1,3 @@
-# Only building shared library, since the static library would not work
 from conans import ConanFile, CMake, os
 import os, subprocess
 
@@ -65,6 +64,6 @@ class GlewConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == "Windows":
-            self.cpp_info.libs = ['glew32']
+            self.cpp_info.libs = ['glew32'] if self.settings.arch == "x86" else ['glew64'] 
         else:
             self.cpp_info.libs = ['GLEW']
