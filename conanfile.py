@@ -63,6 +63,6 @@ class GlewConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == "Windows":
-            self.cpp_info.libs = ['glew32'] 
+            self.cpp_info.libs = ['glew'] 
         else:
             self.cpp_info.libs = ['GLEW']
