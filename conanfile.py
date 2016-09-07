@@ -52,17 +52,18 @@ class GlewConan(ConanFile):
         self.copy("include/*", ".", "%s" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
         if self.settings.os == "Windows":
-            self.copy(pattern="*.dll", dst="bin", src=self.ZIP_FOLDER_NAME, keep_path=False)
-            self.copy(pattern="*.lib", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+            self.copy(pattern="*.dll", dst="bin", keep_path=False)
+            self.copy(pattern="*.lib", dst="lib", keep_path=False)
         else:
             if self.settings.os == "Macos":
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
             else:
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
-                self.copy(pattern="*.so*", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+                self.copy(pattern="*.so*", dst="lib", keep_path=False)
+
 
     def package_info(self):
         if self.settings.os == "Windows":
-            self.cpp_info.libs = ['glew'] 
+            self.cpp_info.libs = ['glew32'] 
         else:
             self.cpp_info.libs = ['GLEW']
