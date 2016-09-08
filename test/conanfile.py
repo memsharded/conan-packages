@@ -10,9 +10,6 @@ class TestGlew(ConanFile):
     requires = "glew/1.13.0@%s/%s" % (username, channel)
     generators = "cmake"
 
-    def configure(self):
-        del self.settings.compiler.libcxx
-
     def build(self):
         cmake = CMake(self.settings)
         self.run('cmake "%s" %s' % (self.conanfile_directory, cmake.command_line))

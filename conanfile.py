@@ -31,7 +31,6 @@ class GlewConan(ConanFile):
             self.ensure_linux_dependency("libglu1-mesa-dev")
                 
     def build(self):
-        self.system_requirements()
         cmake = CMake(self.settings)
 
         try:
