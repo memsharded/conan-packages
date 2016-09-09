@@ -20,7 +20,7 @@ class GlewConan(ConanFile):
     def ensure_linux_dependency(self, package):
         if not self.linux_package_installed(package):
             self.output.warn(package + " is not installed in this machine! Conan will try to install it.")
-            self.run("sudo apt-get install -y " + package)
+            self.run("sudo apt-get update && sudo apt-get install -y " + package)
             if not self.linux_package_installed(package):
                 self.output.error(package + " Installation doesn't work... install it manually and try again")
                 exit(1)
