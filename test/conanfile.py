@@ -1,7 +1,6 @@
 from conans import ConanFile, CMake
 import os
 
-# This easily allows to copy the package in other user or channel
 channel = os.getenv("CONAN_CHANNEL", "ci")
 username = os.getenv("CONAN_USERNAME", "coding3d")
 
@@ -16,9 +15,7 @@ class TestGlew(ConanFile):
         self.run("cmake --build . %s" % cmake.build_config)
 
     def test(self):
-        # equal to ./bin/greet, but portable win: .\bin\greet
         self.run(os.sep.join([".","bin", "testGlew"]))
 
     def imports(self):
-        if self.settings.os == "Windows":
-            self.copy("*.dll", "bin", "bin")
+        self.copy("*.dll", "bin", "bin")

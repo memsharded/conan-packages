@@ -29,7 +29,10 @@ class GlewConan(ConanFile):
         if self.settings.os == "Linux":
             self.ensure_linux_dependency("mesa-common-dev")
             self.ensure_linux_dependency("libglu1-mesa-dev")
-                
+
+    def configure(self):
+        del self.settings.compiler.libcxx
+
     def build(self):
         cmake = CMake(self.settings)
 
@@ -53,16 +56,16 @@ class GlewConan(ConanFile):
         if self.settings.os == "Windows":
             self.copy(pattern="*.dll", dst="bin", keep_path=False)
             self.copy(pattern="*.lib", dst="lib", keep_path=False)
+        elif self.settings.os == "Macos":
+            self.copy(pattern="*.a", dst="lib", keep_path=False)
         else:
-            if self.settings.os == "Macos":
-                self.copy(pattern="*.a", dst="lib", keep_path=False)
-            else:
-                self.copy(pattern="*.a", dst="lib", keep_path=False)
-                self.copy(pattern="*.so*", dst="lib", keep_path=False)
-
+            self.copy(pattern="*.so", dst="lib", keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Windows":
             self.cpp_info.libs = ['glew32'] 
         else:
             self.cpp_info.libs = ['GLEW']
+            
+        if self.settings.build_type == "Debug":
+                self.cpp_info.libs[0] += "d"
