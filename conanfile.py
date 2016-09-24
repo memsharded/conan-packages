@@ -7,7 +7,7 @@ class GlewConan(ConanFile):
     ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "cmake"
     settings = "os", "arch", "build_type", "compiler"
-    url="http://github.com/dimitri03/conan-glew"
+    url="http://github.com/dimi309/conan-glew"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
     exports = "*"
