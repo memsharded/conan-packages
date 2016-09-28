@@ -4,9 +4,11 @@ import os, subprocess
 class GlewConan(ConanFile):
     name = "glew"
     version = "1.13.0"
-    ZIP_FOLDER_NAME = "%s-%s" % (name, version)
-    generators = "cmake"
+    ZIP_FOLDER_NAME = "glew-%s-%s" % (name, version)
+    generators = "cmake", "txt"
     settings = "os", "arch", "build_type", "compiler"
+    options = {"shared": [True, False]}
+    default_options = "shared=False"
     url="http://github.com/dimi309/conan-glew"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
@@ -32,30 +34,38 @@ class GlewConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        if self.settings.os != "Windows":
+            self.options.remove("shared")
+    
+    def source(self):
+        zip_name = "glew-%s.tar.gz" % self.version
+        download("https://github.com/nigels-com/glew/archive/%s" % zip_name, zip_name)
+        unzip(zip_name)
+        os.unlink(zip_name)
 
     def build(self):
-        cmake = CMake(self.settings)
-
-        try:
-            if self.settings.os == "Windows":
-                self.run("cd %s && rd /s /q _build" % self.ZIP_FOLDER_NAME)
-            else:
-                self.run("cd %s && rm -rf _build" % self.ZIP_FOLDER_NAME)
-        except:
-            pass
-
-        self.run("cd %s && mkdir _build" % self.ZIP_FOLDER_NAME)
-        cd_build = "cd %s/_build" % self.ZIP_FOLDER_NAME
-        self.run('%s && cmake ../build/cmake %s -DBUILD_UTILS=OFF' % (cd_build, cmake.command_line))
-        self.run("%s && cmake --build . %s" % (cd_build, cmake.build_config))
+        if self.settings.os == "Windows":
+            env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
+            cd_build = "cd %s\build\vc12" % self.ZIP_FOLDER_NAME
+            self.run("%s && %s && devenv glew.sln /upgrade" % (cd_build, env_line))
+            self.run("%s && %s && msbuild glew.sln" % (cd_build, env_line))
+        else:
+            cmake = CMake(self.settings)
+            self.run("cd %s && mkdir _build" % self.ZIP_FOLDER_NAME)
+            cd_build = "cd %s/_build" % self.ZIP_FOLDER_NAME
+            self.run('%s && cmake ../build/cmake %s -DBUILD_UTILS=OFF' % (cd_build, cmake.command_line))
+            self.run("%s && cmake --build . %s" % (cd_build, cmake.build_config))
 
     def package(self):
         self.copy("FindGLEW.cmake", ".", ".")
         self.copy("include/*", ".", "%s" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
         if self.settings.os == "Windows":
-            self.copy(pattern="*.dll", dst="bin", keep_path=False)
-            self.copy(pattern="*.lib", dst="lib", keep_path=False)
+            if self.options.shared:
+                self.copy(pattern="*.dll", dst="bin", keep_path=False)
+                self.copy(pattern="glew*.lib", dst="lib", keep_path=False)
+            else
+                self.copy(pattern="libglew*.lib", dst="lib", keep_path=False)
         elif self.settings.os == "Macos":
             self.copy(pattern="*.a", dst="lib", keep_path=False)
         else:
