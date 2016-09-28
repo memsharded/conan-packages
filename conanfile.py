@@ -81,5 +81,5 @@ class GlewConan(ConanFile):
         else:
             self.cpp_info.libs = ['GLEW']
             
-        if self.settings.build_type == "Debug":
+        if self.settings.build_type == "Debug" and self.settings.os != "Windows":
                 self.cpp_info.libs[0] += "d"
