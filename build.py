@@ -9,9 +9,8 @@ if __name__ == "__main__":
         #builder.add({'compiler.version': '10', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'Visual Studio', 'compiler.runtime': 'MT'})
         #builder.add({'compiler.version': '12', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'Visual Studio', 'compiler.runtime': 'MTd'})
         #builder.add({'compiler.version': '12', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'Visual Studio', 'compiler.runtime': 'MT'})
-        builder.add({'compiler.version': '14', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'Visual Studio', 'compiler.runtime': 'MTd'})
-        builder.add({'compiler.version': '14', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'Visual Studio', 'compiler.runtime': 'MT'})
-        builder.run()
+        builder.add({'compiler.version': '14', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'Visual Studio', 'compiler.runtime': 'MDd'})
+        builder.add({'compiler.version': '14', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'Visual Studio', 'compiler.runtime': 'MD'})
     elif platform.system() == 'Linux':
         builder.add({'compiler.version': '4.6', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'gcc'})
         builder.add({'compiler.version': '4.8', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'gcc'})
@@ -34,3 +33,4 @@ if __name__ == "__main__":
         builder.add({'compiler.version': '7.0', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'apple-clang'})
         builder.add({'compiler.version': '6.1', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'apple-clang'})
         builder.add({'compiler.version': '6.0', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'apple-clang'})
+    builder.run()
