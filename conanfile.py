@@ -9,7 +9,7 @@ class GlewConan(ConanFile):
     generators = "cmake", "txt"
     settings = "os", "arch", "build_type", "compiler"
     options = {"shared": [True, False]}
-    default_options = "shared=False"
+    default_options = "shared=True"
     url="http://github.com/dimi309/conan-glew"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
