@@ -7,7 +7,7 @@ environment:
     CONAN_UPLOAD: 1
     CONAN_REFERENCE: "glew/1.13.0"
     CONAN_USERNAME: "coding3d"
-    CONAN_CHANNEL: "test"
+    CONAN_CHANNEL: "testing"
     CONAN_TOTAL_PAGES: 1
 
     matrix:
