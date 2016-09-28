@@ -7,8 +7,8 @@ if __name__ == "__main__":
     if platform.system() == 'Windows':
         #builder.add({'compiler.version': '10', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'Visual Studio', 'compiler.runtime': 'MTd'})
         #builder.add({'compiler.version': '10', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'Visual Studio', 'compiler.runtime': 'MT'})
-        builder.add({'compiler.version': '12', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'Visual Studio', 'compiler.runtime': 'MTd'})
-        builder.add({'compiler.version': '12', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'Visual Studio', 'compiler.runtime': 'MT'})
+        #builder.add({'compiler.version': '12', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'Visual Studio', 'compiler.runtime': 'MTd'})
+        #builder.add({'compiler.version': '12', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'Visual Studio', 'compiler.runtime': 'MT'})
         builder.add({'compiler.version': '14', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'Visual Studio', 'compiler.runtime': 'MTd'})
         builder.add({'compiler.version': '14', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'Visual Studio', 'compiler.runtime': 'MT'})
         builder.run()
