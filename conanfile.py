@@ -49,14 +49,14 @@ class GlewConan(ConanFile):
             env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
             cd_build = ""
             if self.settings.compiler.version == 10:
-                cd_build = "cd %s\build\vc10" % self.ZIP_FOLDER_NAME
+                cd_build = "cd %s\\build\\vc10" % self.ZIP_FOLDER_NAME
             elif self.settings.compiler.version == 12:
-                cd_build = "cd %s\build\vc12" % self.ZIP_FOLDER_NAME
+                cd_build = "cd %s\\build\\vc12" % self.ZIP_FOLDER_NAME
             elif self.settings.compiler.version > 12:
-                cd_build = "cd %s\build\vc12" % self.ZIP_FOLDER_NAME
+                cd_build = "cd %s\\build\\vc12" % self.ZIP_FOLDER_NAME
                 self.run("%s && %s && devenv glew.sln /upgrade" % (cd_build, env.command_line))
             elif self.settings.compiler.version > 10 and self.settings.compiler.version < 12:
-                cd_build = "cd %s\build\vc10" % self.ZIP_FOLDER_NAME
+                cd_build = "cd %s\\build\\vc10" % self.ZIP_FOLDER_NAME
                 self.run("%s && %s && devenv glew.sln /upgrade" % (cd_build, env.command_line))
             self.run("%s && %s && msbuild glew.sln" % (cd_build, env.command_line))
         else:
