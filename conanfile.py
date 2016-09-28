@@ -1,5 +1,6 @@
 from conans import ConanFile, CMake, os
 import os, subprocess
+from conans.tools import download, unzip
 
 class GlewConan(ConanFile):
     name = "glew"
