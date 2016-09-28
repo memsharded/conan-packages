@@ -1,4 +1,4 @@
-from conans import ConanFile, CMake, os
+from conans import ConanFile, CMake, os, ConfigureEnvironment
 import os, subprocess
 from conans.tools import download, unzip
 
