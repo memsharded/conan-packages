@@ -46,9 +46,18 @@ class GlewConan(ConanFile):
     def build(self):
         if self.settings.os == "Windows":
             env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
-            cd_build = "cd %s\build\vc12" % self.ZIP_FOLDER_NAME
-            self.run("%s && %s && devenv glew.sln /upgrade" % (cd_build, env_line))
-            self.run("%s && %s && msbuild glew.sln" % (cd_build, env_line))
+            cd_build = ""
+            if self.settings.compiler.version == 10:
+                cd_build = "cd %s\build\vc10" % self.ZIP_FOLDER_NAME
+            elif self.settings.compiler.version == 12:
+                cd_build = "cd %s\build\vc12" % self.ZIP_FOLDER_NAME
+            elif self.settings.compiler.version > 12:
+                cd_build = "cd %s\build\vc12" % self.ZIP_FOLDER_NAME
+                self.run("%s && %s && devenv glew.sln /upgrade" % (cd_build, env.command_line))
+            elif self.settings.compiler.version > 10 and self.settings.compiler.version < 12:
+                cd_build = "cd %s\build\vc10" % self.ZIP_FOLDER_NAME
+                self.run("%s && %s && devenv glew.sln /upgrade" % (cd_build, env.command_line))
+            self.run("%s && %s && msbuild glew.sln" % (cd_build, env.command_line))
         else:
             cmake = CMake(self.settings)
             self.run("cd %s && mkdir _build" % self.ZIP_FOLDER_NAME)
@@ -64,7 +73,7 @@ class GlewConan(ConanFile):
             if self.options.shared:
                 self.copy(pattern="*.dll", dst="bin", keep_path=False)
                 self.copy(pattern="glew*.lib", dst="lib", keep_path=False)
-            else
+            else:
                 self.copy(pattern="libglew*.lib", dst="lib", keep_path=False)
         elif self.settings.os == "Macos":
             self.copy(pattern="*.a", dst="lib", keep_path=False)
