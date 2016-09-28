@@ -40,7 +40,6 @@ class GlewConan(ConanFile):
 
     def build(self):
         if self.settings.os == "Windows":
-            env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
             cd_build = ""
             proj_name="glew.sln"
             if self.settings.compiler.version == 10:
@@ -49,11 +48,13 @@ class GlewConan(ConanFile):
                 cd_build = "cd %s\\build\\vc12" % self.ZIP_FOLDER_NAME
             elif self.settings.compiler.version > 12:
                 cd_build = "cd %s\\build\\vc12" % self.ZIP_FOLDER_NAME
-                self.run("%s && %s && devenv %s /upgrade" % (cd_build, env.command_line, proj_name))
+                self.run("%s && devenv %s /upgrade" % (cd_build, proj_name))
             elif self.settings.compiler.version > 10 and self.settings.compiler.version < 12:
                 cd_build = "cd %s\\build\\vc10" % self.ZIP_FOLDER_NAME
-                self.run("%s && %s && devenv %s /upgrade" % (cd_build, env.command_line, proj_name))
-            self.run("%s && %s && msbuild %s" % (cd_build, env.command_line, proj_name))
+                self.run("%s && devenv %s /upgrade" % (cd_build, proj_name))
+            platform = "Win32" if self.settings.arch == "x86" else "x64"
+            self.run("%s && msbuild %s /property:Configuration=%s /property:Platform=%s" %
+                (cd_build, proj_name, self.settings.build_type, platform))
         else:
             cmake = CMake(self.settings)
             self.run("cd %s && mkdir _build" % self.ZIP_FOLDER_NAME)
@@ -66,9 +67,13 @@ class GlewConan(ConanFile):
         self.copy("include/*", ".", "%s" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
         if self.settings.os == "Windows":
-            self.copy(pattern="*.lib", dst="lib", keep_path=False)
             if self.options.shared:
+                self.copy(pattern="*32.lib", dst="lib", keep_path=False)
+                self.copy(pattern="*32d.lib", dst="lib", keep_path=False)
                 self.copy(pattern="*.dll", dst="bin", keep_path=False)
+            else:
+                self.copy(pattern="*32s.lib", dst="lib", keep_path=False)
+                self.copy(pattern="*32sd.lib", dst="lib", keep_path=False)
         elif self.settings.os == "Macos":
             self.copy(pattern="*.a", dst="lib", keep_path=False)
         else:
