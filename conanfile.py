@@ -5,7 +5,7 @@ from conans.tools import download, unzip
 class GlewConan(ConanFile):
     name = "glew"
     version = "1.13.0"
-    ZIP_FOLDER_NAME = "glew-%s-%s" % (name, version)
+    ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "cmake", "txt"
     settings = "os", "arch", "build_type", "compiler"
     options = {"shared": [True, False]}
@@ -37,12 +37,6 @@ class GlewConan(ConanFile):
         del self.settings.compiler.libcxx
         if self.settings.os != "Windows":
             self.options.remove("shared")
-    
-    def source(self):
-        zip_name = "glew-%s.tar.gz" % self.version
-        download("https://github.com/nigels-com/glew/archive/%s" % zip_name, zip_name)
-        unzip(zip_name)
-        os.unlink(zip_name)
 
     def build(self):
         if self.settings.os == "Windows":
