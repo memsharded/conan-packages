@@ -4,7 +4,7 @@ from conans.tools import download, unzip
 
 class GlewConan(ConanFile):
     name = "glew"
-    version = "1.13.0"
+    version = "2.0.0"
     ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "cmake", "txt"
     settings = "os", "arch", "build_type", "compiler"
