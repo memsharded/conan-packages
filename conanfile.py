@@ -9,7 +9,7 @@ class GlewConan(ConanFile):
     generators = "cmake", "txt"
     settings = "os", "arch", "build_type", "compiler"
     options = {"shared": [True, False]}
-    default_options = "shared=True"
+    default_options = "shared=False"
     url="http://github.com/dimi309/conan-glew"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
@@ -40,6 +40,7 @@ class GlewConan(ConanFile):
 
     def build(self):
         if self.settings.os == "Windows":
+
             cd_build = ""
             proj_name="glew.sln"
             if self.settings.compiler.version == 10:
@@ -84,8 +85,13 @@ class GlewConan(ConanFile):
             self.cpp_info.libs = ['glew32']
             if not self.options.shared:
                 self.cpp_info.libs[0] += "s"
+                self.cpp_info.libs.append("OpenGL32.lib")
+                self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
+                self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
         else:
             self.cpp_info.libs = ['GLEW']
+            if self.settings.os == "Macos":
+                self.cpp_info.exelinkflags.append("-framework OpenGL")
 
         if self.settings.build_type == "Debug":
                 self.cpp_info.libs[0] += "d"
