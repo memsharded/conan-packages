@@ -35,8 +35,6 @@ class GlewConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
-        if self.settings.os != "Windows" and self.settings.os != "Macos":
-            self.options.remove("shared")
 
     def build(self):
         if self.settings.os == "Windows":
@@ -81,7 +79,10 @@ class GlewConan(ConanFile):
             else:
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
         else:
-            self.copy(pattern="*.so", dst="lib", keep_path=False)
+            if self.options.shared:
+                self.copy(pattern="*.so", dst="lib", keep_path=False)
+            else:
+                self.copy(pattern="*.a", dst="lib", keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Windows":
@@ -95,6 +96,8 @@ class GlewConan(ConanFile):
             self.cpp_info.libs = ['GLEW']
             if self.settings.os == "Macos":
                 self.cpp_info.exelinkflags.append("-framework OpenGL")
+            elif not self.options.shared:
+                self.cpp_info.libs.append("GL")
 
         if self.settings.build_type == "Debug":
                 self.cpp_info.libs[0] += "d"
