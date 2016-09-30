@@ -19,3 +19,4 @@ class TestGlew(ConanFile):
 
     def imports(self):
         self.copy("*.dll", "bin", "bin")
+        self.copy("*.dylib", "bin", "bin")

@@ -35,7 +35,7 @@ class GlewConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
-        if self.settings.os != "Windows":
+        if self.settings.os != "Windows" and self.settings.os != "Macos":
             self.options.remove("shared")
 
     def build(self):
@@ -76,7 +76,10 @@ class GlewConan(ConanFile):
                 self.copy(pattern="*32s.lib", dst="lib", keep_path=False)
                 self.copy(pattern="*32sd.lib", dst="lib", keep_path=False)
         elif self.settings.os == "Macos":
-            self.copy(pattern="*.a", dst="lib", keep_path=False)
+            if self.options.shared:
+                self.copy(pattern="*.dylib", dst="lib", keep_path=False)
+            else:
+                self.copy(pattern="*.a", dst="lib", keep_path=False)
         else:
             self.copy(pattern="*.so", dst="lib", keep_path=False)
 
