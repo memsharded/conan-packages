@@ -8,10 +8,14 @@ environment:
     CONAN_REFERENCE: "glew/2.0.0"
     CONAN_USERNAME: "coding3d"
     CONAN_CHANNEL: "testing"
-    CONAN_TOTAL_PAGES: 1
+    CONAN_TOTAL_PAGES: 4
 
     matrix:
         - CONAN_CURRENT_PAGE: 1
+        - CONAN_CURRENT_PAGE: 2
+        - CONAN_CURRENT_PAGE: 3
+        - CONAN_CURRENT_PAGE: 4
+
 
 install:
   - set PATH=%PATH%;%PYTHON%/Scripts/
