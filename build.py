@@ -3,30 +3,10 @@ import os, platform
 
 if __name__ == "__main__":
     builder = ConanMultiPackager()
-
-    if platform.system() == 'Windows':
-        builder.add({'compiler.version': '14', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'Visual Studio', 'compiler.runtime': 'MD'})
-        builder.add({'compiler.version': '14', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'Visual Studio', 'compiler.runtime': 'MD'})
-    elif platform.system() == 'Linux':
-        builder.add({'compiler.version': '4.6', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'gcc'})
-        builder.add({'compiler.version': '4.8', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'gcc'})
-        builder.add({'compiler.version': '4.9', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'gcc'})
-        builder.add({'compiler.version': '5.2', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'gcc'})
-        builder.add({'compiler.version': '5.3', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'gcc'})
-
-        builder.add({'compiler.version': '4.6', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'gcc'})
-        builder.add({'compiler.version': '4.8', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'gcc'})
-        builder.add({'compiler.version': '4.9', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'gcc'})
-        builder.add({'compiler.version': '5.2', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'gcc'})
-        builder.add({'compiler.version': '5.3', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'gcc'})
-    elif platform.system() == 'Darwin':
-        builder.add({'compiler.version': '7.3', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'apple-clang'})
-        builder.add({'compiler.version': '7.0', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'apple-clang'})
-        builder.add({'compiler.version': '6.1', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'apple-clang'})
-        builder.add({'compiler.version': '6.0', 'arch': 'x86_64', 'build_type': 'Debug', 'compiler': 'apple-clang'})
-
-        builder.add({'compiler.version': '7.3', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'apple-clang'})
-        builder.add({'compiler.version': '7.0', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'apple-clang'})
-        builder.add({'compiler.version': '6.1', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'apple-clang'})
-        builder.add({'compiler.version': '6.0', 'arch': 'x86_64', 'build_type': 'Release', 'compiler': 'apple-clang'})
+    builder.add_common_builds()
+    filtered_builds = []
+    for settings, options in builder.builds:
+        if not (settings["compiler"] == "Visual Studio" and settings["compiler.version"] != "14"):
+            filtered_builds.append([settings, options])
+    builder.builds = filtered_builds
     builder.run()
