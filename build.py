@@ -6,8 +6,8 @@ if __name__ == "__main__":
     builder.add_common_builds()
     filtered_builds = []
     for settings, options in builder.builds:
-        if not (settings["compiler"] == "Visual Studio" and settings["compiler.version"] != "14") and \
-        not (settings["compiler"] != "gcc" and settings["arch"] == "x86"):
+        if not (settings["compiler"] == "Visual Studio" and settings["compiler.version"] < 14) and \
+        not (settings["compiler"] == "gcc" and settings["arch"] == "x86"):
             filtered_builds.append([settings, options])
     builder.builds = filtered_builds
     builder.run()
