@@ -38,7 +38,6 @@ class GlewConan(ConanFile):
 
     def build(self):
         if self.settings.os == "Windows":
-
             cd_build = ""
             proj_name="glew.sln"
             if self.settings.compiler.version == 10:
@@ -92,6 +91,7 @@ class GlewConan(ConanFile):
                 self.cpp_info.libs.append("OpenGL32.lib")
                 self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
                 self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
+                self.cpp_info.defines.append("GLEW_STATIC")
         else:
             self.cpp_info.libs = ['GLEW']
             if self.settings.os == "Macos":
