@@ -7,7 +7,7 @@ if __name__ == "__main__":
     filtered_builds = []
     for settings, options in builder.builds:
         if not (settings["compiler"] == "Visual Studio" and settings["compiler.version"] != "14") and \
-        not (settings["compiler"] == "gcc" and settings["arch"] == "x86"):
+        not (settings["compiler"] in ("gcc", "apple-clang") and settings["arch"] == "x86"):
             filtered_builds.append([settings, options])
     builder.builds = filtered_builds
     builder.run()

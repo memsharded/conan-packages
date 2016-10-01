@@ -90,7 +90,7 @@ class GlewConan(ConanFile):
                 self.cpp_info.libs[0] += "s"
                 self.cpp_info.libs.append("OpenGL32.lib")
                 self.cpp_info.defines.append("GLEW_STATIC")
-                if self.settings.compiler.runtime not in ("MT", "MTd"):
+                if self.settings.compiler.runtime != "MT":
                     self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
                     self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
                 
