@@ -22,4 +22,4 @@ install:
   - conan user
 
 test_script:
-  - C:\Python27-x64\python build.py
+  - C:\Python27\python build.py
