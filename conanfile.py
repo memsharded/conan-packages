@@ -18,7 +18,7 @@ class GlewConan(ConanFile):
     def rpm_package_installed(self, package):
         p = subprocess.Popen(['rpm', '-q', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = p.communicate()
-        return 'install ok' in out
+        return 'install ok' in out or 'not installed' not in out
 
     def ensure_rpm_dependency(self, package):
         if not self.rpm_package_installed(package):
