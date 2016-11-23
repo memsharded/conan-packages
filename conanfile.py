@@ -1,6 +1,8 @@
+import os
+import subprocess
 from conans import ConanFile, CMake, os, ConfigureEnvironment
-import os, subprocess
 from conans.tools import download, unzip
+
 
 class GlewConan(ConanFile):
     name = "glew"
@@ -52,7 +54,6 @@ class GlewConan(ConanFile):
                 self.ensure_rpm_dependency("mesa-libGLU-devel")
             else:
                 self.output.warn("Could not determine Linux distro, skipping system requirements check.")
-                
 
     def configure(self):
         del self.settings.compiler.libcxx
@@ -61,14 +62,15 @@ class GlewConan(ConanFile):
         if self.settings.os == "Windows":
             cd_build = ""
             proj_name="glew.sln"
-            if self.settings.compiler.version == 10:
+            compiler_version = int(self.settings.compiler.version.value)
+            if compiler_version == 10:
                 cd_build = "cd %s\\build\\vc10" % self.ZIP_FOLDER_NAME
-            elif self.settings.compiler.version == 12:
+            elif compiler_version == 12:
                 cd_build = "cd %s\\build\\vc12" % self.ZIP_FOLDER_NAME
-            elif self.settings.compiler.version > 12:
+            elif compiler_version > 12:
                 cd_build = "cd %s\\build\\vc12" % self.ZIP_FOLDER_NAME
                 self.run("%s && devenv %s /upgrade" % (cd_build, proj_name))
-            elif self.settings.compiler.version > 10 and self.settings.compiler.version < 12:
+            elif compiler_version > 10 and compiler_version < 12:
                 cd_build = "cd %s\\build\\vc10" % self.ZIP_FOLDER_NAME
                 self.run("%s && devenv %s /upgrade" % (cd_build, proj_name))
             platform = "Win32" if self.settings.arch == "x86" else "x64"
@@ -114,7 +116,7 @@ class GlewConan(ConanFile):
                 if self.settings.compiler.runtime != "MT":
                     self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
                     self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
-                
+
         else:
             self.cpp_info.libs = ['GLEW']
             if self.settings.os == "Macos":
