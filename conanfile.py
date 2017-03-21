@@ -59,7 +59,7 @@ class GlewConan(ConanFile):
         del self.settings.compiler.libcxx
 
     def build(self):
-        if self.settings.os == "Windows":
+        if self.settings.compiler == "Visual Studio":
             cd_build = ""
             proj_name="glew.sln"
             compiler_version = int(self.settings.compiler.version.value)
@@ -107,7 +107,7 @@ class GlewConan(ConanFile):
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        if self.settings.os == "Windows":
+        if self.settings.compiler == "Visual Studio":
             self.cpp_info.libs = ['glew32']
             if not self.options.shared:
                 self.cpp_info.libs[0] += "s"
