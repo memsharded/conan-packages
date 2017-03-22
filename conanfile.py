@@ -1,12 +1,13 @@
 import os
 import subprocess
 from conans import ConanFile, CMake, os, ConfigureEnvironment
-from conans.tools import download, unzip
+from conans.tools import download, unzip, build_sln_command, vcvars_command
 
 
 class GlewConan(ConanFile):
     name = "glew"
     version = "2.0.0"
+    description = "Conan package for the GLEW library"
     ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "cmake", "txt"
     settings = "os", "arch", "build_type", "compiler"
@@ -60,28 +61,16 @@ class GlewConan(ConanFile):
 
     def build(self):
         if self.settings.compiler == "Visual Studio":
-            cd_build = ""
-            proj_name="glew.sln"
-            compiler_version = int(self.settings.compiler.version.value)
-            if compiler_version == 10:
-                cd_build = "cd %s\\build\\vc10" % self.ZIP_FOLDER_NAME
-            elif compiler_version == 12:
-                cd_build = "cd %s\\build\\vc12" % self.ZIP_FOLDER_NAME
-            elif compiler_version > 12:
-                cd_build = "cd %s\\build\\vc12" % self.ZIP_FOLDER_NAME
-                self.run("%s && devenv %s /upgrade" % (cd_build, proj_name))
-            elif compiler_version > 10 and compiler_version < 12:
-                cd_build = "cd %s\\build\\vc10" % self.ZIP_FOLDER_NAME
-                self.run("%s && devenv %s /upgrade" % (cd_build, proj_name))
-            platform = "Win32" if self.settings.arch == "x86" else "x64"
-            self.run("%s && msbuild %s /property:Configuration=%s /property:Platform=%s" %
-                (cd_build, proj_name, self.settings.build_type, platform))
+            version = min(12, int(self.settings.compiler.version.value))
+            version = 10 if version == 11 else version
+            path = "%s\\build\\vc%s" % (self.ZIP_FOLDER_NAME, version)
+            build_command = build_sln_command(self.settings, "%s\\glew.sln" % path)
+            command = "echo dummy string %s && %s" % (vcvars_command(self.settings), build_command)
+            self.run(command)
         else:
             cmake = CMake(self.settings)
-            self.run("cd %s && mkdir _build" % self.ZIP_FOLDER_NAME)
-            cd_build = "cd %s/_build" % self.ZIP_FOLDER_NAME
-            self.run('%s && cmake ../build/cmake %s -DBUILD_UTILS=OFF' % (cd_build, cmake.command_line))
-            self.run("%s && cmake --build . %s" % (cd_build, cmake.build_config))
+            cmake.configure(self, source_dir="%s/build/cmake" % self.ZIP_FOLDER_NAME, defs={"BUILD_UTILS": "OFF"})
+            cmake.build(self)
 
     def package(self):
         self.copy("FindGLEW.cmake", ".", ".")
@@ -125,4 +114,4 @@ class GlewConan(ConanFile):
                 self.cpp_info.libs.append("GL")
 
         if self.settings.build_type == "Debug":
-                self.cpp_info.libs[0] += "d"
+            self.cpp_info.libs[0] += "d"
