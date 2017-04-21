@@ -1,8 +1,6 @@
-import os
 import subprocess
-from conans import ConanFile, CMake, os, ConfigureEnvironment
-from conans.tools import download, unzip, build_sln_command, vcvars_command
-
+from conans import ConanFile, CMake
+from conans.tools import build_sln_command, vcvars_command
 
 class GlewConan(ConanFile):
     name = "glew"
@@ -65,7 +63,7 @@ class GlewConan(ConanFile):
             version = 10 if version == 11 else version
             path = "%s\\build\\vc%s" % (self.ZIP_FOLDER_NAME, version)
             build_command = build_sln_command(self.settings, "%s\\glew.sln" % path)
-            command = "echo dummy string %s && %s" % (vcvars_command(self.settings), build_command)
+            command = "%s && %s" % (vcvars_command(self.settings), build_command)
             self.run(command)
         else:
             cmake = CMake(self.settings)
