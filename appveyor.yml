@@ -22,4 +22,5 @@ install:
   - conan user
 
 test_script:
+  - cd glew
   - C:\Python27\python build.py

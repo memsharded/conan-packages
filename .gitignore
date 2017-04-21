@@ -10,8 +10,4 @@ Thumbs.db
 
 #Emacs buffers
 \#*\#
-
-/test/build
-conanfile.pyc
-conaninfo.txt
-conanbuildinfo.cmake
+\.#*
