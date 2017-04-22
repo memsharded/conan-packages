@@ -18,7 +18,8 @@ class OggConan(ConanFile):
     settings = "os", "arch", "build_type", "compiler"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=False", "fPIC=True"
-    url="http://github.com/dimi309/conan-ogg"
+    url="http://github.com/dimi309/conan-packages"
+    description="The OGG library"
     requires = ""
     license="BSD"
     exports = "*"
@@ -75,52 +76,55 @@ class OggConan(ConanFile):
     def build(self):
         
         if self.settings.os == "Windows":
-            env = VisualStudioBuildEnvironment(self.deps_cpp_info, self.settings)
-            env_line = env.command_line
+            env = VisualStudioBuildEnvironment(self)
+            with tools.environment_append(env.vars):
+                vcvars = tools.vcvars_command(self.settings)
             
-            if self.options.shared:
-                vs_project = "libogg_dynamic"
-            else:
-                vs_project = "libogg_static"
+                if self.options.shared:
+                    vs_project = "libogg_dynamic"
+                else:
+                    vs_project = "libogg_static"
 
-            cd_build = "cd %s\win32\VS2010" % self.ZIP_FOLDER_NAME
-            self.run("%s && %s && devenv %s.sln /upgrade" % (env_line, cd_build, vs_project))
-            vs_runtime = {
-                "MT": "MultiThreaded",
-                "MTd": "MultiThreadedDebug",
-                "MD": "MultiThreadedDLL",
-                "MDd": "MultiThreadedDebugDLL"
-            }
-            replace_in_file_regex(
-                "%s\win32\VS2010\%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_project),
-                r"<RuntimeLibrary>\w+</RuntimeLibrary>",
-                "<RuntimeLibrary>%s</RuntimeLibrary>" % vs_runtime.get(str(self.settings.compiler.runtime), "Invalid"))
-            platform = "Win32" if self.settings.arch == "x86" else "x64"
-            self.run("%s && %s && msbuild %s.sln /property:Configuration=%s /property:Platform=%s" % \
-            (env_line, cd_build, vs_project, self.settings.build_type, platform))
+                cd_build = "cd %s\win32\VS2010" % self.ZIP_FOLDER_NAME
+                self.run("%s && %s && devenv %s.sln /upgrade" % (env_line, cd_build, vs_project))
+                vs_runtime = {
+                    "MT": "MultiThreaded",
+                    "MTd": "MultiThreadedDebug",
+                    "MD": "MultiThreadedDLL",
+                    "MDd": "MultiThreadedDebugDLL"
+                }
+                replace_in_file_regex(
+                    "%s\win32\VS2010\%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_project),
+                    r"<RuntimeLibrary>\w+</RuntimeLibrary>",
+                    "<RuntimeLibrary>%s</RuntimeLibrary>" % vs_runtime.get(str(self.settings.compiler.runtime), "Invalid"))
+                platform = "Win32" if self.settings.arch == "x86" else "x64"
+                self.run("%s && %s && msbuild %s.sln /property:Configuration=%s /property:Platform=%s" % \
+            (vcvars, cd_build, vs_project, self.settings.build_type, platform))
         else:
-            env = AutoToolsBuildEnvironment(self.deps_cpp_info, self.settings)
-            if self.options.fPIC:
-                 env_line = env.command_line.replace('CFLAGS="', 'CFLAGS="-fPIC ')
-            else:
-                 env_line = env.command_line
-            if self.settings.os == "Macos":
-                old_str = '-install_name \$rpath/\$soname'
-                new_str = '-install_name \$soname'
-                replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
-            
-            cd_build = "cd %s" % self.ZIP_FOLDER_NAME
+            env = AutoToolsBuildEnvironment(self)
+            with tools.environment_append(env_build.vars):
+                env.fpic = self.options.fPIC
 
-            # This solves an automake version mismatch problem
-            print(self.settings.os)
-            if self.settings.os == "Linux":
-                if self.settings.compiler.version >= 5.3:
-                    self.run("%s && %s autoreconf --force --install" % (cd_build, env_line))
-                self.run("%s && %s aclocal" % (cd_build, env_line))
-                self.run("%s && %s automake" % (cd_build, env_line))
-            # The following is for Linux and OSX
-            self.run("%s && chmod +x ./configure && %s ./configure" % (cd_build, env_line))
-            self.run("%s && %s make" % (cd_build, env_line))
+                if self.settings.os == "Macos":
+                    old_str = '-install_name \$rpath/\$soname'
+                    new_str = '-install_name \$soname'
+                    replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
+            
+                cd_build = "cd %s" % self.ZIP_FOLDER_NAME
+
+                with tools.environment_append(env.vars):
+                    
+                    # This solves an automake version mismatch problem
+                    print(self.settings.os)
+
+                    if self.settings.os == "Linux":
+                        if self.settings.compiler.version >= 5.3:
+                            self.run("%s && autoreconf --force --install" % cd_build)
+                        self.run("%s && aclocal" % cd_build)
+                        self.run("%s && automake" % cd_build)
+                    # The following is for Linux and OSX
+                    self.run("%s && chmod +x ./configure && ./configure" % cd_build)
+                    self.run("%s && make" % cd_build)
 
     def package(self):
         self.copy("FindOgg.cmake", ".", ".")
