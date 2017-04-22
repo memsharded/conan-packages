@@ -85,7 +85,7 @@ class OggConan(ConanFile):
                 else:
                     vs_project = "libogg_static"
 
-                cd_build = "cd %s\win32\VS2010" % self.ZIP_FOLDER_NAME
+                cd_build = "cd %s\\win32\\VS2010" % self.ZIP_FOLDER_NAME
                 self.run("%s && %s && devenv %s.sln /upgrade" % (vcvars, cd_build, vs_project))
                 vs_runtime = {
                     "MT": "MultiThreaded",
@@ -94,7 +94,7 @@ class OggConan(ConanFile):
                     "MDd": "MultiThreadedDebugDLL"
                 }
                 replace_in_file_regex(
-                    "%s\win32\VS2010\%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_project),
+                    "%s\\win32\\VS2010\\%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_project),
                     r"<RuntimeLibrary>\w+</RuntimeLibrary>",
                     "<RuntimeLibrary>%s</RuntimeLibrary>" % vs_runtime.get(str(self.settings.compiler.runtime), "Invalid"))
                 platform = "Win32" if self.settings.arch == "x86" else "x64"
@@ -106,8 +106,8 @@ class OggConan(ConanFile):
                 env.fpic = self.options.fPIC
 
                 if self.settings.os == "Macos":
-                    old_str = '-install_name \$rpath/\$soname'
-                    new_str = '-install_name \$soname'
+                    old_str = '-install_name \\$rpath/\\$soname'
+                    new_str = '-install_name \\$soname'
                     replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
             
                 cd_build = "cd %s" % self.ZIP_FOLDER_NAME
@@ -115,8 +115,6 @@ class OggConan(ConanFile):
                 with tools.environment_append(env.vars):
                     
                     # This solves an automake version mismatch problem
-                    print(self.settings.os)
-
                     if self.settings.os == "Linux":
                         if self.settings.compiler.version >= 5.3:
                             self.run("%s && autoreconf --force --install" % cd_build)
