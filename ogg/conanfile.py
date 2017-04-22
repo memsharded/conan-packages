@@ -86,7 +86,7 @@ class OggConan(ConanFile):
                     vs_project = "libogg_static"
 
                 cd_build = "cd %s\win32\VS2010" % self.ZIP_FOLDER_NAME
-                self.run("%s && %s && devenv %s.sln /upgrade" % (env_line, cd_build, vs_project))
+                self.run("%s && %s && devenv %s.sln /upgrade" % (vcvars, cd_build, vs_project))
                 vs_runtime = {
                     "MT": "MultiThreaded",
                     "MTd": "MultiThreadedDebug",
