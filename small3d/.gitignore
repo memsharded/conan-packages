@@ -1,0 +1,7 @@
+*
+!conanfile.py
+!README.md
+!.gitignore
+!test_package
+!CMakeLists.txt
+!build.py
