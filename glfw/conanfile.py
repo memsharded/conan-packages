@@ -1,6 +1,5 @@
 from conans import ConanFile, CMake, os
 from conans.tools import download, unzip
-import os, subprocess
 
 class GlfwConan(ConanFile):
     name = "glfw"
@@ -19,13 +18,14 @@ class GlfwConan(ConanFile):
         os.unlink("%s.zip" % self.ZIP_FOLDER_NAME)
 
     def build(self):
+        
         cmake = CMake(self)
         self.run("cmake %s/%s %s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line))
         self.run("cmake --build %s %s" % (self.conanfile_directory, cmake.build_config))
 
     def package(self):
 
-        self.copy("FindGLFW.cmake", self.ZIP_FOLDER_NAME, ".")
+        self.copy("FindGLFW.cmake", ".", ".")
         
         self.copy(pattern="*.h", dst="include", src="%s/include" % self.ZIP_FOLDER_NAME, keep_path=True)
 

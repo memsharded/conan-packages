@@ -1,5 +1,5 @@
 from conans import ConanFile, CMake, os
-from conans.tools import download, unzip
+from conans.tools import download, unzip, replace_in_file
 import os, subprocess
 
 class Small3dConan(ConanFile):
@@ -59,6 +59,20 @@ class Small3dConan(ConanFile):
         os.unlink("%s.zip" % self.ZIP_FOLDER_NAME)
         
     def build(self):
+
+        replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)", "")
+        replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "project(small3d)",
+                        """
+project(small3d)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
+set(CMAKE_C_FLAGS "${CONAN_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CONAN_CXX_FLAGS}")
+set(CMAKE_SHARED_LINKER_FLAGS "${CONAN_SHARED_LINKER_FLAGS}")
+
+                        """)
+        
         cmake = CMake(self)
         self.run("cmake %s/%s %s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line))
         self.run("cmake --build . %s" % cmake.build_config)
