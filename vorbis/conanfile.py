@@ -1,4 +1,4 @@
-from conans import ConanFile, CMake, os, ConfigureEnvironment
+from conans import ConanFile, os, ConfigureEnvironment
 from conans.tools import download, unzip, replace_in_file
 
 class VorbisConan(ConanFile):
@@ -9,7 +9,8 @@ class VorbisConan(ConanFile):
     settings = "os", "arch", "build_type", "compiler"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=False", "fPIC=True"
-    url="http://github.com/dimi309/conan-vorbis"
+    url="http://github.com/dimi309/conan-packages"
+    description="The VORBIS library"
     requires = "ogg/1.3.2@coding3d/stable"
     license="BSD"
     exports = "*"
@@ -43,11 +44,11 @@ class VorbisConan(ConanFile):
 
             libdirs="<AdditionalLibraryDirectories>"
             libdirs_ext="<AdditionalLibraryDirectories>$(LIB);"
-            replace_in_file("%s\win32\VS2010\libvorbis\libvorbis%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-            replace_in_file("%s\win32\VS2010\libvorbisfile\libvorbisfile%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-            replace_in_file("%s\win32\VS2010\\vorbisdec\\vorbisdec%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-            replace_in_file("%s\win32\VS2010\\vorbisenc\\vorbisenc%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-            cd_build = "cd %s\win32\VS2010" % self.ZIP_FOLDER_NAME
+            replace_in_file("%s\\win32\\VS2010\\libvorbis\\libvorbis%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+            replace_in_file("%s\\win32\\VS2010\\libvorbisfile\\libvorbisfile%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+            replace_in_file("%s\\win32\\VS2010\\vorbisdec\\vorbisdec%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+            replace_in_file("%s\\win32\\VS2010\\vorbisenc\\vorbisenc%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+            cd_build = "cd %s\\win32\\VS2010" % self.ZIP_FOLDER_NAME
             self.run("%s && devenv vorbis%s.sln /upgrade" % (cd_build, vs_suffix))
             platform = "Win32" if self.settings.arch == "x86" else "x64"
             self.run("%s && %s & msbuild vorbis%s.sln /property:Configuration=%s /property:Platform=%s" %
@@ -62,8 +63,8 @@ class VorbisConan(ConanFile):
             cd_build = "cd %s" % self.ZIP_FOLDER_NAME
 
             if self.settings.os == "Macos":
-                old_str = '-install_name \$rpath/\$soname'
-                new_str = '-install_name \$soname'
+                old_str = '-install_name \\$rpath/\\$soname'
+                new_str = '-install_name \\$soname'
                 replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
 
             self.run("%s && chmod +x ./configure && %s ./configure" % (cd_build, env_line))
