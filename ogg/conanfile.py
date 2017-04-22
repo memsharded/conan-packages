@@ -102,7 +102,7 @@ class OggConan(ConanFile):
             (vcvars, cd_build, vs_project, self.settings.build_type, platform))
         else:
             env = AutoToolsBuildEnvironment(self)
-            with tools.environment_append(env_build.vars):
+            with tools.environment_append(env.vars):
                 env.fpic = self.options.fPIC
 
                 if self.settings.os == "Macos":
