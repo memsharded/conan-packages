@@ -5,8 +5,8 @@ if __name__ == "__main__":
     builder = ConanMultiPackager()
     builder.add_common_builds()
     filtered_builds = []
-    for settings, options in builder.builds.iteritems():
+    for settings, options, env_vars, build_requires in builder.builds:
         if not (settings["compiler"] == "Visual Studio" and settings["compiler.version"] != "14"):
-            filtered_builds.append([settings, options])
+            filtered_builds.append([settings, options, env_vars, build_requires])
     builder.builds = filtered_builds
     builder.run()
