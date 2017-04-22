@@ -5,13 +5,13 @@ from conans.tools import build_sln_command, vcvars_command
 class GlewConan(ConanFile):
     name = "glew"
     version = "2.0.0"
-    description = "Conan package for the GLEW library"
+    description = "The GLEW library"
     ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "cmake", "txt"
     settings = "os", "arch", "build_type", "compiler"
     options = {"shared": [True, False]}
     default_options = "shared=False"
-    url="http://github.com/dimi309/conan-glew"
+    url="http://github.com/dimi309/conan-packages"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
     exports = "*"
