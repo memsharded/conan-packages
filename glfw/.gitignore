@@ -3,6 +3,3 @@
 !README.md
 !.gitignore
 !test_package
-!CMakeListsRoot.txt
-!CMakeListsSmall3d.txt
-!build.py

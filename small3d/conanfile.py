@@ -3,23 +3,22 @@ import os, subprocess
 
 class Small3dConan(ConanFile):
     name = "small3d"
-    version = "1.1.3"
+    version = "master"
     description = "A small, cross-platform 3D game engine (C++, OpenGL, SDL or GLFW) - runs on Win/MacOS/Linux"
     ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "cmake"
     settings = "os", "arch", "build_type", "compiler"
-    options = {"glfw": [True, False]} 
-    url="http://github.com/dimi309/small3d"
-    requires = "freetype/2.6.3@lasote/stable","glew/2.0.0@coding3d/stable", \
+    url="http://github.com/dimi309/conan-packages"
+    requires = "glfw3/3.2.1@lasote/vcpkg", "freetype/2.6.3@lasote/stable","glew/2.0.0@coding3d/stable", \
         "libpng/1.6.23@lasote/stable","zlib/1.2.8@lasote/stable","glm/0.9.7.6@dlarudgus20/stable", \
         "vorbis/1.3.5@coding3d/stable", "portaudio/rc.v190600.20161001@jgsogo/stable"
-    default_options = "glew:shared=False", "glfw=False"
+    default_options = "glew:shared=False"
     license="https://github.com/dimi309/small3d/blob/master/LICENSE"
-    exports = "CMakeLists.txt", "small3d/*", "FindSMALL3D.cmake", "cmake/*"
+    exports = "*"
 
     def rpm_package_installed(self, package):
         p = subprocess.Popen(['rpm', '-q', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = p.communicate()
+        out, _ = p.communicate()
         return 'install ok' in out or 'not installed' not in out
 
     def ensure_rpm_dependency(self, package):
@@ -33,7 +32,7 @@ class Small3dConan(ConanFile):
 
     def debian_package_installed(self, package):
         p = subprocess.Popen(['dpkg', '-s', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = p.communicate()
+        out, _ = p.communicate()
         return 'install ok' in out
 
     def ensure_debian_dependency(self, package):
@@ -53,23 +52,22 @@ class Small3dConan(ConanFile):
         else:
 	    self.output.warn("Could not determine Linux distro, skipping system requirements check.")
 
-    def requirements(self):
-        if self.options.glfw:
-            self.requires("glfw3/3.2.1@lasote/vcpkg")
-        else:
-            self.requires("SDL2/2.0.5@lasote/stable")
+    def source(self):
+        download("https://github.com/dimi309/small3d/archive/%s.zip" % self.name)
+        unzip("%s.zip" % self.ZIP_FOLDER_NAME)
+        os.unlink("%s.zip" % self.ZIP_FOLDER_NAME)
 
     def build(self):
-        glfw_option = "-DWITH_GLFW=1" if self.options.glfw else ""
-        cmake = CMake(self.settings)
-        self.run("cmake %s -DBUILD_WITH_CONAN=TRUE %s %s" % (self.conanfile_directory, glfw_option, cmake.command_line))
+        self.copy("CMakeListsRoot.txt", ".", "%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME)
+        cmake = CMake(self)
+        self.run("cmake %s -DBUILD_WITH_CONAN=TRUE %s %s" % (self.conanfile_directory, cmake.command_line))
         self.run("cmake --build . %s" % cmake.build_config)
 
     def package(self):
 
-        self.copy("FindSMALL3D.cmake", ".", ".")
-        self.copy(pattern="*", dst="shaders", src="small3d/resources/shaders", keep_path=True)
-        self.copy(pattern="*.hpp", dst="include", src="small3d/include", keep_path=True)
+        self.copy("FindSMALL3D.cmake", self.ZIP_FOLDER_NAME, ".")
+        self.copy(pattern="*", dst="shaders", src="%s/small3d/resources/shaders" % self.ZIP_FOLDER_NAME, keep_path=True)
+        self.copy(pattern="*.hpp", dst="include", src="%s/small3d/include" % self.ZIP_FOLDER_NAME, keep_path=True)
 
         if self.settings.os == "Windows":
             self.copy(pattern="*.dll", dst="bin", keep_path=False)

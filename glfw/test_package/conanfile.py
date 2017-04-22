@@ -4,9 +4,9 @@ import os
 channel = os.getenv("CONAN_CHANNEL", "testing")
 username = os.getenv("CONAN_USERNAME", "coding3d")
 
-class TestGlew(ConanFile):
+class TestGlfw(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    requires = "small3d/master@%s/%s" % (username, channel)
+    requires = "glfw/3.2.1@%s/%s" % (username, channel)
     generators = "cmake"
 
     def build(self):
@@ -15,4 +15,4 @@ class TestGlew(ConanFile):
         self.run("cmake --build . %s" % cmake.build_config)
 
     def test(self):
-        self.run(os.sep.join([".","bin", "test_small3d"]))
+        self.run(os.sep.join([".","bin", "test_glfw"]))
