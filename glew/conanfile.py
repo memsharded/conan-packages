@@ -18,7 +18,7 @@ class GlewConan(ConanFile):
 
     def rpm_package_installed(self, package):
         p = subprocess.Popen(['rpm', '-q', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = p.communicate()
+        out, _ = p.communicate()
         return 'install ok' in out or 'not installed' not in out
 
     def ensure_rpm_dependency(self, package):
@@ -32,7 +32,7 @@ class GlewConan(ConanFile):
 
     def debian_package_installed(self, package):
         p = subprocess.Popen(['dpkg', '-s', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = p.communicate()
+        out, _ = p.communicate()
         return 'install ok' in out
 
     def ensure_debian_dependency(self, package):
@@ -66,9 +66,9 @@ class GlewConan(ConanFile):
             command = "%s && %s" % (vcvars_command(self.settings), build_command)
             self.run(command)
         else:
-            cmake = CMake(self.settings)
-            cmake.configure(self, source_dir="%s/build/cmake" % self.ZIP_FOLDER_NAME, defs={"BUILD_UTILS": "OFF"})
-            cmake.build(self)
+            cmake = CMake(self)
+            cmake.configure(source_dir="%s/build/cmake" % self.ZIP_FOLDER_NAME, defs={"BUILD_UTILS": "OFF"})
+            cmake.build()
 
     def package(self):
         self.copy("FindGLEW.cmake", ".", ".")
