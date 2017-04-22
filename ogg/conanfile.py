@@ -1,4 +1,4 @@
-from conans import ConanFile, os, AutoToolsBuildEnvironment, VisualStudioBuildEnvironment
+from conans import ConanFile, AutoToolsBuildEnvironment, VisualStudioBuildEnvironment, tools
 from conans.tools import download, unzip, replace_in_file
 from conans.util.files import load
 import os, subprocess, re
