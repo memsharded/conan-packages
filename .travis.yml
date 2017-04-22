@@ -9,7 +9,7 @@ env:
     - CONAN_REFERENCE="glew/2.0.0"
     - CONAN_USERNAME="coding3d"
     - CONAN_CHANNEL="testing"
-    - CONAN_TOTAL_PAGES=5
+    - CONAN_TOTAL_PAGES=1
     - CONAN_CURRENT_PAGE=1
 
   matrix:
