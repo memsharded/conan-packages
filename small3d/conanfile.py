@@ -1,4 +1,5 @@
 from conans import ConanFile, CMake, os
+from conans.tools import download, unzip
 import os, subprocess
 
 class Small3dConan(ConanFile):
@@ -9,7 +10,7 @@ class Small3dConan(ConanFile):
     generators = "cmake"
     settings = "os", "arch", "build_type", "compiler"
     url="http://github.com/dimi309/conan-packages"
-    requires = "glfw3/3.2.1@lasote/vcpkg", "freetype/2.6.3@lasote/stable","glew/2.0.0@coding3d/stable", \
+    requires = "glfw/3.2.1@coding3d/testing", "freetype/2.6.3@lasote/stable","glew/2.0.0@coding3d/stable", \
         "libpng/1.6.23@lasote/stable","zlib/1.2.8@lasote/stable","glm/0.9.7.6@dlarudgus20/stable", \
         "vorbis/1.3.5@coding3d/stable", "portaudio/rc.v190600.20161001@jgsogo/stable"
     default_options = "glew:shared=False"
@@ -53,14 +54,13 @@ class Small3dConan(ConanFile):
 	    self.output.warn("Could not determine Linux distro, skipping system requirements check.")
 
     def source(self):
-        download("https://github.com/dimi309/small3d/archive/%s.zip" % self.name)
+        download("https://github.com/dimi309/small3d/archive/%s.zip" % self.version, "%s.zip" % self.ZIP_FOLDER_NAME)
         unzip("%s.zip" % self.ZIP_FOLDER_NAME)
         os.unlink("%s.zip" % self.ZIP_FOLDER_NAME)
-
+        
     def build(self):
-        self.copy("CMakeListsRoot.txt", ".", "%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME)
         cmake = CMake(self)
-        self.run("cmake %s -DBUILD_WITH_CONAN=TRUE %s %s" % (self.conanfile_directory, cmake.command_line))
+        self.run("cmake %s/%s %s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line))
         self.run("cmake --build . %s" % cmake.build_config)
 
     def package(self):

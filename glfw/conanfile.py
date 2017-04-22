@@ -25,6 +25,8 @@ class GlfwConan(ConanFile):
 
     def package(self):
 
+        self.copy("FindGLFW.cmake", self.ZIP_FOLDER_NAME, ".")
+        
         self.copy(pattern="*.h", dst="include", src="%s/include" % self.ZIP_FOLDER_NAME, keep_path=True)
 
         if self.settings.os == "Windows":
