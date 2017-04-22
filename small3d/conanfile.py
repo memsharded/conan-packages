@@ -1,4 +1,4 @@
-from conans import ConanFile, CMake, os
+from conans import ConanFile, CMake
 from conans.tools import download, unzip, replace_in_file
 import os, subprocess
 
@@ -29,7 +29,7 @@ class Small3dConan(ConanFile):
             self.run("sudo yum install -y " + package)
             if not self.rpm_package_installed(package):
                 self.output.error(package + " Installation doesn't work... install it manually and try again")
-		exit(1)
+                exit(1)
 
     def debian_package_installed(self, package):
         p = subprocess.Popen(['dpkg', '-s', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -45,13 +45,13 @@ class Small3dConan(ConanFile):
                 exit(1)
 
     def system_requirements(self):
-	if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
+        if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
             self.ensure_debian_dependency("libjack-dev")
         elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
             self.ensure_rpm_dependency("jack-audio-connection-kit-devel")
             self.ensure_rpm_dependency("alsa-lib-devel")
         else:
-	    self.output.warn("Could not determine Linux distro, skipping system requirements check.")
+            self.output.warn("Could not determine Linux distro, skipping system requirements check.")
 
     def source(self):
         download("https://github.com/dimi309/small3d/archive/%s.zip" % self.version, "%s.zip" % self.ZIP_FOLDER_NAME)
