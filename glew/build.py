@@ -6,7 +6,7 @@ if __name__ == "__main__":
     builder.add_common_builds()
     filtered_builds = []
     for settings, options, env_vars, build_requires in builder.builds:
-        if not settings["arch"] == "x86":
+        if not settings["arch"] == "x86" and not settings["arch"] == "i686":
             filtered_builds.append([settings, options, env_vars, build_requires])
     builder.builds = filtered_builds
     builder.run()
