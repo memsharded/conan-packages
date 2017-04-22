@@ -73,9 +73,9 @@ class OggConan(ConanFile):
         os.unlink(zip_name)
 
     def build(self):
-        env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
         
         if self.settings.os == "Windows":
+            env = VisualStudioBuildEnvironment(self.deps_cpp_info, self.settings)
             env_line = env.command_line
             
             if self.options.shared:
@@ -99,7 +99,7 @@ class OggConan(ConanFile):
             self.run("%s && %s && msbuild %s.sln /property:Configuration=%s /property:Platform=%s" % \
             (env_line, cd_build, vs_project, self.settings.build_type, platform))
         else:
-            
+            env = AutoToolsBuildEnvironment(self.deps_cpp_info, self.settings)
             if self.options.fPIC:
                  env_line = env.command_line.replace('CFLAGS="', 'CFLAGS="-fPIC ')
             else:
