@@ -125,7 +125,7 @@ class OggConan(ConanFile):
                     self.run("%s && make" % cd_build)
 
     def package(self):
-        self.copy("FindOgg.cmake", ".", ".")
+        self.copy("FindOGG.cmake", ".", ".")
         self.copy("include/ogg/*.h", ".", "%s" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
         if self.settings.os == "Windows":
