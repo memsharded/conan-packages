@@ -79,4 +79,6 @@ class GlfwConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ['glfw3']
+        if self.settings.os != "Windows" and self.settings.os != "Macos":
+            self.cpp_info.exelinkflags.append("-ldl")
 

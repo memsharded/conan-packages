@@ -126,4 +126,4 @@ endif()
         else:
             self.cpp_info.cppflags.append("-std=c++11")
             self.cpp_info.cppflags.append("-Wl,--no-as-needed")
-            self.cpp_info.exelinkflags.append("-ljack -lasound")
+            self.cpp_info.exelinkflags.append("-ljack -lasound -lpthread")

@@ -1,4 +1,4 @@
-find_path(GLFW_INCLUDE_DIR NAMES glfw PATHS include)
+find_path(GLFW_INCLUDE_DIR NAMES GLFW PATHS include)
 find_library(GLFW_LIBRARY NAMES glfw3 PATHS lib )
 
 MESSAGE("** GLFW FOUND BY CONAN")
