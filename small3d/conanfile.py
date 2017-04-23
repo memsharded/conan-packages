@@ -59,8 +59,15 @@ class Small3dConan(ConanFile):
         os.unlink("%s.zip" % self.ZIP_FOLDER_NAME)
         
     def build(self):
+        replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)", """
+endif()
+subdirs(small3d)
+""")
 
-        replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)", "")
+        replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "add_definitions(-DSMALL3D_GLFW)", """
+add_definitions(-DSMALL3D_GLFW)
+if(FALSE)
+""")
         replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "project(small3d)",
                         """
 project(small3d)
@@ -72,6 +79,18 @@ set(CMAKE_CXX_FLAGS "${CONAN_CXX_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CONAN_SHARED_LINKER_FLAGS}")
 
                         """)
+
+        replace_in_file("%s/small3d/src/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "# Unit testing",
+                        """
+if(FALSE)
+                        """)
+
+        replace_in_file("%s/small3d/src/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "endif(APPLE)",
+                        """
+endif(APPLE)
+endif()
+                        """)
+        
         
         cmake = CMake(self)
         self.run("cmake %s/%s %s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line))
@@ -80,6 +99,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CONAN_SHARED_LINKER_FLAGS}")
     def package(self):
 
         self.copy("FindSMALL3D.cmake", self.ZIP_FOLDER_NAME, ".")
+        self.copy("FindGLM.cmake", self.ZIP_FOLDER_NAME, ".")
         self.copy(pattern="*", dst="shaders", src="%s/small3d/resources/shaders" % self.ZIP_FOLDER_NAME, keep_path=True)
         self.copy(pattern="*.hpp", dst="include", src="%s/small3d/include" % self.ZIP_FOLDER_NAME, keep_path=True)
 
