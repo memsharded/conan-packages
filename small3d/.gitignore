@@ -1,9 +1,2 @@
-*
-!conanfile.py
-!README.md
-!.gitignore
-!test_package
-!CMakeListsRoot.txt
-!CMakeListsSmall3d.txt
-!build.py
-!FindSMALL3D.cmake
+*.pyc
+/build
