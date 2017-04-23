@@ -1,5 +1,2 @@
-*
-!conanfile.py
-!README.md
-!.gitignore
-!test_package
+*.pyc
+/build
