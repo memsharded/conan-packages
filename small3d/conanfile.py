@@ -11,7 +11,7 @@ class Small3dConan(ConanFile):
     settings = "os", "arch", "build_type", "compiler"
     url="http://github.com/dimi309/conan-packages"
     requires = "glfw/3.2.1@coding3d/testing", "freetype/2.6.3@lasote/stable","glew/2.0.0@coding3d/stable", \
-        "libpng/1.6.23@lasote/stable","zlib/1.2.8@lasote/stable","glm/0.9.7.6@dlarudgus20/stable", \
+        "libpng/1.6.23@lasote/stable","zlib/1.2.8@lasote/stable","glm/0.9.7.6@coding3d/stable", \
         "vorbis/1.3.5@coding3d/stable", "portaudio/rc.v190600.20161001@jgsogo/stable"
     default_options = "glew:shared=False"
     license="https://github.com/dimi309/small3d/blob/master/LICENSE"
@@ -59,15 +59,7 @@ class Small3dConan(ConanFile):
         os.unlink("%s.zip" % self.ZIP_FOLDER_NAME)
         
     def build(self):
-        replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)", """
-endif()
-subdirs(small3d)
-""")
-
-        replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "add_definitions(-DSMALL3D_GLFW)", """
-add_definitions(-DSMALL3D_GLFW)
-if(FALSE)
-""")
+        
         replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "project(small3d)",
                         """
 project(small3d)
@@ -80,6 +72,16 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CONAN_SHARED_LINKER_FLAGS}")
 
                         """)
 
+        replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, 'file(COPY "small3d/include" DESTINATION ".")', """
+if(FALSE)
+file(COPY "small3d/include" DESTINATION ".")
+""")
+
+        replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, 'set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)', """
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+endif()
+""")
+        
         replace_in_file("%s/small3d/src/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "# Unit testing",
                         """
 if(FALSE)
@@ -99,7 +101,6 @@ endif()
     def package(self):
 
         self.copy("FindSMALL3D.cmake", self.ZIP_FOLDER_NAME, ".")
-        self.copy("FindGLM.cmake", self.ZIP_FOLDER_NAME, ".")
         self.copy(pattern="*", dst="shaders", src="%s/small3d/resources/shaders" % self.ZIP_FOLDER_NAME, keep_path=True)
         self.copy(pattern="*.hpp", dst="include", src="%s/small3d/include" % self.ZIP_FOLDER_NAME, keep_path=True)
 
