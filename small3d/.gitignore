@@ -6,3 +6,4 @@
 !CMakeListsRoot.txt
 !CMakeListsSmall3d.txt
 !build.py
+!FindSMALL3D.cmake
