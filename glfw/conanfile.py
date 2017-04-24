@@ -11,7 +11,7 @@ class GlfwConan(ConanFile):
     settings = "os", "arch", "build_type", "compiler"
     url="http://github.com/dimi309/conan-packages"
     license="https://github.com/glfw/glfw/blob/master/LICENSE.md"
-    exports = "*"
+    exports = "FindGLFW.cmake"
 
     def rpm_package_installed(self, package):
         p = subprocess.Popen(['rpm', '-q', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -59,7 +59,8 @@ class GlfwConan(ConanFile):
     def build(self):
         self.system_requirements()
         cmake = CMake(self)
-        self.run("cmake %s/%s %s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line))
+        dynlib = '-DBUILD_SHARED_LIBS=ON' if self.settings.os != "Windows" and self.settings.os != "Macos" else ''
+        self.run("cmake %s/%s %s %s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line, dynlib))
         self.run("cmake --build %s %s" % (self.conanfile_directory, cmake.build_config))
 
     def package(self):
@@ -68,17 +69,16 @@ class GlfwConan(ConanFile):
         self.copy(pattern="*.h", dst="include", src="%s/include" % self.ZIP_FOLDER_NAME, keep_path=True)
 
         if self.settings.os == "Windows":
-            self.copy(pattern="*.dll", dst="bin", keep_path=False)
             self.copy(pattern="*.lib", dst="lib", keep_path=False)
         else:
             if self.settings.os == "Macos":
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
             else:
                 self.copy(pattern="*.so*", dst="lib", keep_path=False)
-                self.copy(pattern="*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ['glfw3']
+        self.cpp_info.libs = ['glfw']
         if self.settings.os != "Windows" and self.settings.os != "Macos":
-            self.cpp_info.exelinkflags.append("-lXrandr -lXrender -lXi -lGL -lXcursor -lm -ldl -ldrm -lXdamage -lX11-xcb -lxcb-glx -lxcb-dri2 -lxcb-dri3 -lxcb-present -lxcb-sync -lxshmfence -lXxf86vm -lXfixes -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -lXinerama")
+            self.cpp_info.exelinkflags.append("-lXrandr -ldl")
+
 
