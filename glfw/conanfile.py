@@ -5,7 +5,7 @@ import os, subprocess
 class GlfwConan(ConanFile):
     name = "glfw"
     version = "3.2.1"
-    description = "The GLFW library"
+    description = "The GLFW library - Builds on Windows, Linux and Macos/OSX"
     ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "cmake"
     settings = "os", "arch", "build_type", "compiler"
