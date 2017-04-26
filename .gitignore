@@ -11,3 +11,6 @@ Thumbs.db
 #Emacs buffers
 \#*\#
 \.#*
+
+conanbuildinfo.cmake
+conaninfo.txt

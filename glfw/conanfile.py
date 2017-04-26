@@ -44,12 +44,11 @@ class GlfwConan(ConanFile):
         if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
             self.ensure_debian_dependency("libglu1-mesa-dev")
             self.ensure_debian_dependency("xorg-dev") 
-#        elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
-#            self.ensure_rpm_dependency("jack-audio-connection-kit-devel")
-#            self.ensure_rpm_dependency("alsa-lib-devel")
+        elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
+            self.ensure_rpm_dependency("mesa-libGL-devel")
+            self.ensure_rpm_dependency("xorg-x11-server-devel")
         else:
-            self.output.warn("Could not determine Linux distro, skipping system requirements check.")
-
+            self.output.warn("Could not determine package manager, skipping Linux system requirements installation.")
 
     def source(self):
         download("https://github.com/glfw/glfw/archive/%s.zip" % self.version, "%s.zip" % self.ZIP_FOLDER_NAME)
@@ -57,7 +56,6 @@ class GlfwConan(ConanFile):
         os.unlink("%s.zip" % self.ZIP_FOLDER_NAME)
 
     def build(self):
-        self.system_requirements()
         cmake = CMake(self)
         dynlib = '-DBUILD_SHARED_LIBS=ON' if self.settings.os != "Windows" and self.settings.os != "Macos" else ''
         self.run("cmake %s/%s %s %s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line, dynlib))
@@ -85,5 +83,3 @@ class GlfwConan(ConanFile):
         else:
             self.cpp_info.libs = ['glfw']
             self.cpp_info.exelinkflags.append("-lXrandr -ldl")
-
-
