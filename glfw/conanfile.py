@@ -43,10 +43,13 @@ class GlfwConan(ConanFile):
     def system_requirements(self):
         if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
             self.ensure_debian_dependency("libglu1-mesa-dev")
-            self.ensure_debian_dependency("xorg-dev") 
+            self.ensure_debian_dependency("xorg-dev")
         elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
             self.ensure_rpm_dependency("mesa-libGL-devel")
             self.ensure_rpm_dependency("xorg-x11-server-devel")
+            self.ensure_rpm_dependency("libXrandr-devel")
+            self.ensure_rpm_dependency("libXinerama-devel")
+            self.ensure_rpm_dependency("libXcursor-devel")
         else:
             self.output.warn("Could not determine package manager, skipping Linux system requirements installation.")
 
