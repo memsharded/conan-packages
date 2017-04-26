@@ -79,9 +79,9 @@ class GlfwConan(ConanFile):
     def package_info(self):
         if self.settings.os == "Macos":
             self.cpp_info.libs = ['glfw3']
+            self.cpp_info.exelinkflags.append("-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
         elif self.settings.os == "Windows":
             self.cpp_info.libs = ['glfw']
-            self.cpp_info.exelinkflags.append("-framework Cocoa -framework IOKit -framework CoreVideo")
         else:
             self.cpp_info.libs = ['glfw']
             self.cpp_info.exelinkflags.append("-lXrandr -ldl")
