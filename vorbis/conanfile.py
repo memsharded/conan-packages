@@ -1,6 +1,6 @@
-from conans import ConanFile, os, ConfigureEnvironment
+from conans import ConanFile, AutoToolsBuildEnvironment, VisualStudioBuildEnvironment, tools
 from conans.tools import download, unzip, replace_in_file
-
+import os
 class VorbisConan(ConanFile):
     name = "vorbis"
     version = "1.3.5"
@@ -31,44 +31,42 @@ class VorbisConan(ConanFile):
         os.unlink(zip_name)
 
     def build(self):
-        env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
 
         if self.settings.os == "Windows":
-
-            env_line = env.command_line
+            env = VisualStudioBuildEnvironment(self)
+            with tools.environment_append(env.vars):
+                vcvars = tools.vcvars_command(self.settings)
             
-            if self.options.shared:
-                vs_suffix = "_dynamic"
-            else:
-                vs_suffix = "_static"
+                if self.options.shared:
+                    vs_suffix = "_dynamic"
+                else:
+                    vs_suffix = "_static"
 
-            libdirs="<AdditionalLibraryDirectories>"
-            libdirs_ext="<AdditionalLibraryDirectories>$(LIB);"
-            replace_in_file("%s\\win32\\VS2010\\libvorbis\\libvorbis%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-            replace_in_file("%s\\win32\\VS2010\\libvorbisfile\\libvorbisfile%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-            replace_in_file("%s\\win32\\VS2010\\vorbisdec\\vorbisdec%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-            replace_in_file("%s\\win32\\VS2010\\vorbisenc\\vorbisenc%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-            cd_build = "cd %s\\win32\\VS2010" % self.ZIP_FOLDER_NAME
-            self.run("%s && devenv vorbis%s.sln /upgrade" % (cd_build, vs_suffix))
-            platform = "Win32" if self.settings.arch == "x86" else "x64"
-            self.run("%s && %s & msbuild vorbis%s.sln /property:Configuration=%s /property:Platform=%s" %
-            (env_line, cd_build, vs_suffix, self.settings.build_type, platform))
+                libdirs="<AdditionalLibraryDirectories>"
+                libdirs_ext="<AdditionalLibraryDirectories>$(LIB);"
+                replace_in_file("%s\\win32\\VS2010\\libvorbis\\libvorbis%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+                replace_in_file("%s\\win32\\VS2010\\libvorbisfile\\libvorbisfile%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+                replace_in_file("%s\\win32\\VS2010\\vorbisdec\\vorbisdec%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+                replace_in_file("%s\\win32\\VS2010\\vorbisenc\\vorbisenc%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+                cd_build = "cd %s\\win32\\VS2010" % self.ZIP_FOLDER_NAME
+                self.run("%s && devenv vorbis%s.sln /upgrade" % (cd_build, vs_suffix))
+                platform = "Win32" if self.settings.arch == "x86" else "x64"
+                self.run("%s && %s & msbuild vorbis%s.sln /property:Configuration=%s /property:Platform=%s" %
+                         (vcvars, cd_build, vs_suffix, self.settings.build_type, platform))
         else:
+            env = AutoToolsBuildEnvironment(self)
+            with tools.environment_append(env.vars):
+                env.fpic = self.options.fPIC
 
-            if self.options.fPIC:
-                env_line = env.command_line.replace('CFLAGS="', 'CFLAGS="-fPIC ')
-            else:
-                env_line = env.command_line
+                cd_build = "cd %s" % self.ZIP_FOLDER_NAME
 
-            cd_build = "cd %s" % self.ZIP_FOLDER_NAME
+                if self.settings.os == "Macos":
+                    old_str = '-install_name \\$rpath/\\$soname'
+                    new_str = '-install_name \\$soname'
+                    replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
 
-            if self.settings.os == "Macos":
-                old_str = '-install_name \\$rpath/\\$soname'
-                new_str = '-install_name \\$soname'
-                replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
-
-            self.run("%s && chmod +x ./configure && %s ./configure" % (cd_build, env_line))
-            self.run("%s && %s make" % (cd_build, env_line))
+                self.run("%s && chmod +x ./configure && ./configure" % cd_build)
+                self.run("%s && make" % cd_build)
 
     def package(self):
         self.copy("FindVORBIS.cmake", ".", ".")
