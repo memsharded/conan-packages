@@ -100,7 +100,7 @@ endif()
 
     def package(self):
 
-        self.copy("FindSMALL3D.cmake", self.ZIP_FOLDER_NAME, ".")
+        self.copy("FindSMALL3D.cmake", ".", ".")
         self.copy(pattern="*", dst="shaders", src="%s/small3d/resources/shaders" % self.ZIP_FOLDER_NAME, keep_path=True)
         self.copy(pattern="*.hpp", dst="include", src="%s/small3d/include" % self.ZIP_FOLDER_NAME, keep_path=True)
 
