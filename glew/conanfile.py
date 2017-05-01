@@ -57,6 +57,12 @@ class GlewConan(ConanFile):
     def configure(self):
         del self.settings.compiler.libcxx
 
+    def source(self):
+        zip_name = "%s-%s.tgz" % (self.ZIP_FOLDER_NAME, self.version)
+        download("https://sourceforge.net/projects/glew/files/glew/%/glew-2.0.0.tgz/download" % (self.version, zip_name))
+        unzip(zip_name)
+        os.unlink(zip_name)
+
     def build(self):
         if self.settings.compiler == "Visual Studio":
             version = min(12, int(self.settings.compiler.version.value))
