@@ -1,6 +1,6 @@
 from conans import ConanFile, CMake
 from conans.tools import download, unzip, replace_in_file
-import os, subprocess
+import os
 
 class Small3dConan(ConanFile):
     name = "small3d"
