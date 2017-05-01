@@ -15,43 +15,7 @@ class Small3dConan(ConanFile):
         "vorbis/1.3.5@coding3d/stable", "portaudio/rc.v190600.20161001@coding3d/temp"
     default_options = "glew:shared=False"
     license="https://github.com/dimi309/small3d/blob/master/LICENSE"
-    exports = "*"
-
-    def rpm_package_installed(self, package):
-        p = subprocess.Popen(['rpm', '-q', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, _ = p.communicate()
-        return 'install ok' in out or 'not installed' not in out
-
-    def ensure_rpm_dependency(self, package):
-        if not self.rpm_package_installed(package):
-            self.output.warn(package + " is not installed in this machine! Conan will try to install it.")
-            # Note: yum is automatically redirected to dnf on modern Fedora distros (see 'man yum2dnf')
-            self.run("sudo yum install -y " + package)
-            if not self.rpm_package_installed(package):
-                self.output.error(package + " Installation doesn't work... install it manually and try again")
-                exit(1)
-
-    def debian_package_installed(self, package):
-        p = subprocess.Popen(['dpkg', '-s', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, _ = p.communicate()
-        return 'install ok' in out
-
-    def ensure_debian_dependency(self, package):
-        if not self.debian_package_installed(package):
-            self.output.warn(package + " is not installed in this machine! Conan will try to install it.")
-            self.run("sudo apt-get update && sudo apt-get install -y " + package)
-            if not self.debian_package_installed(package):
-                self.output.error(package + " Installation doesn't work... install it manually and try again")
-                exit(1)
-
-    def system_requirements(self):
-        if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
-            self.ensure_debian_dependency("libjack-dev")
-        elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
-            self.ensure_rpm_dependency("jack-audio-connection-kit-devel")
-            self.ensure_rpm_dependency("alsa-lib-devel")
-        else:
-            self.output.warn("Could not determine Linux distro, skipping system requirements check.")
+    exports = "FindSMALL3D.cmake"
 
     def source(self):
         download("https://github.com/dimi309/small3d/archive/%s.zip" % self.version, "%s.zip" % self.ZIP_FOLDER_NAME)
@@ -123,8 +87,7 @@ endif()
         elif self.settings.os == "Macos":
             self.cpp_info.cppflags.append("-std=c++11")
             self.cpp_info.cppflags.append("-stdlib=libc++")
-            self.cpp_info.exelinkflags.append("-framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices -framework Carbon")
         else:
             self.cpp_info.cppflags.append("-std=c++11")
             self.cpp_info.cppflags.append("-Wl,--no-as-needed")
-            self.cpp_info.exelinkflags.append("-ljack -lasound -lpthread")
+            
