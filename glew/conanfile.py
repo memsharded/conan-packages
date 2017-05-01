@@ -14,7 +14,7 @@ class GlewConan(ConanFile):
     url="http://github.com/dimi309/conan-packages"
     requires = ""
     license="https://github.com/nigels-com/glew#copyright-and-licensing"
-    exports = "*"
+    exports = "FindGLEW.cmake"
 
     def rpm_package_installed(self, package):
         p = subprocess.Popen(['rpm', '-q', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
