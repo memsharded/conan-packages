@@ -1,6 +1,6 @@
-import subprocess
+import subprocess, os
 from conans import ConanFile, CMake
-from conans.tools import build_sln_command, vcvars_command
+from conans.tools import build_sln_command, vcvars_command, download, unzip
 
 class GlewConan(ConanFile):
     name = "glew"
@@ -58,8 +58,8 @@ class GlewConan(ConanFile):
         del self.settings.compiler.libcxx
 
     def source(self):
-        zip_name = "%s-%s.tgz" % (self.ZIP_FOLDER_NAME, self.version)
-        download("https://sourceforge.net/projects/glew/files/glew/%/glew-2.0.0.tgz/download" % (self.version, zip_name))
+        zip_name = "%s.tgz" % self.ZIP_FOLDER_NAME
+        download("https://sourceforge.net/projects/glew/files/glew/%s/%s/download" % (self.version, zip_name), zip_name)
         unzip(zip_name)
         os.unlink(zip_name)
 
