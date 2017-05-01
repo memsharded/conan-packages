@@ -1,0 +1,5 @@
+test_package/build
+conanfile.pyc
+conaninfo.txt
+conanbuildinfo.txt
+conanbuildinfo.cmake
