@@ -1,3 +1,1 @@
-# conan-vorbis
-
-[Conan.io](https://conan.io) package the Vorbis library: https://xiph.org/vorbis/
+[Conan.io](https://conan.io) package the [Vorbis](https://xiph.org/vorbis/) library

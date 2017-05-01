@@ -1,3 +1,1 @@
-# conan-glew
-
-[Conan.io](https://conan.io) package for the GLEW library: http://glew.sourceforge.net
+[Conan.io](https://conan.io) package for the [GLEW](http://glew.sourceforge.net) library
