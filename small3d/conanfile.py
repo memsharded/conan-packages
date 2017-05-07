@@ -16,7 +16,7 @@ class Small3dConan(ConanFile):
         "vorbis/1.3.5@coding3d/stable", "portaudio/rc.v190600.20161001@jgsogo/stable"
     default_options = "glew:shared=False", "localUnitTests=False"
     license="https://github.com/dimi309/small3d/blob/master/LICENSE"
-    exports = "FindSMALL3D.cmake"
+    exports = ["FindSMALL3D.cmake"]
 
     def source(self):
         download("https://github.com/dimi309/small3d/archive/%s.zip" % self.version, "%s.zip" % self.ZIP_FOLDER_NAME)
@@ -82,7 +82,10 @@ endif()
             else:
                 self.copy(pattern="*.so*", dst="lib", keep_path=False)
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
-
+    def imports(self):
+        if self.options.localUnitTests:
+            self.copy("*.dll", "", "")
+            
     def package_info(self):
         self.cpp_info.libs = ['small3d']
         if self.settings.os == "Windows":
