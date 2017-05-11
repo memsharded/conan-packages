@@ -18,7 +18,7 @@ class Small3dConan(ConanFile):
     license="https://github.com/dimi309/small3d/blob/master/LICENSE"
     exports = ["FindSMALL3D.cmake"]
 
-    def source(self):
+    def source(self):        
         download("https://github.com/dimi309/small3d/archive/%s.zip" % self.version, "%s.zip" % self.ZIP_FOLDER_NAME)
         unzip("%s.zip" % self.ZIP_FOLDER_NAME)
         os.unlink("%s.zip" % self.ZIP_FOLDER_NAME)
@@ -28,6 +28,11 @@ class Small3dConan(ConanFile):
             self.requires("gtest/1.8.0@lasote/stable")
             
     def build(self):
+
+        if self.settings.os == "Windows" and self.settings.compiler != "Visual Studio":
+            self.output.error("On Windows, only Visual Studio compilation is supported for the time being.")
+            quit()
+        
         replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "project(small3d)",
                         """
 project(small3d)

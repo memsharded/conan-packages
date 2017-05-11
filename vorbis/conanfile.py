@@ -33,6 +33,11 @@ class VorbisConan(ConanFile):
     def build(self):
 
         if self.settings.os == "Windows":
+
+            if self.settings.compiler != "Visual Studio":
+                self.output.error("On Windows, only Visual Studio compilation is supported for the time being.")
+                quit()
+            
             env = VisualStudioBuildEnvironment(self)
             with tools.environment_append(env.vars):
                 vcvars = tools.vcvars_command(self.settings)
