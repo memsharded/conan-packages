@@ -1,5 +1,5 @@
 from conans import ConanFile, AutoToolsBuildEnvironment, VisualStudioBuildEnvironment, tools
-from conans.tools import download, unzip, replace_in_file
+from conans.tools import download, unzip, replace_in_file, run_in_windows_bash
 from conans.util.files import load
 import os, subprocess, re
 
@@ -75,12 +75,8 @@ class OggConan(ConanFile):
 
     def build(self):
         
-        if self.settings.os == "Windows":
+        if self.settings.compiler == "Visual Studio":
             
-            if self.settings.compiler != "Visual Studio":
-                self.output.error("On Windows, only Visual Studio compilation is supported for the time being.")
-                quit()
-                
             env = VisualStudioBuildEnvironment(self)
             with tools.environment_append(env.vars):
                 vcvars = tools.vcvars_command(self.settings)
@@ -108,7 +104,9 @@ class OggConan(ConanFile):
         else:
             env = AutoToolsBuildEnvironment(self)
             with tools.environment_append(env.vars):
-                env.fpic = self.options.fPIC
+
+                if self.settings.os != "Windows":
+                    env.fpic = self.options.fPIC
 
                 if self.settings.os == "Macos":
                     old_str = '-install_name \\$rpath/\\$soname'
@@ -125,15 +123,19 @@ class OggConan(ConanFile):
                             self.run("%s && autoreconf --force --install" % cd_build)
                         self.run("%s && aclocal" % cd_build)
                         self.run("%s && automake" % cd_build)
-                    # The following is for Linux and OSX
-                    self.run("%s && chmod +x ./configure && ./configure" % cd_build)
-                    self.run("%s && make" % cd_build)
+
+                    if self.settings.os == "Windows":
+                        self.run("%s && .\configure" % cd_build)
+                        self.run("%s && make" % cd_build)
+                    else:
+                        self.run("%s && .\configure" % cd_build)
+                        self.run("%s && make" % cd_build)
 
     def package(self):
         self.copy("FindOGG.cmake", ".", ".")
         self.copy("include/ogg/*.h", ".", "%s" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
-        if self.settings.os == "Windows":
+        if self.settings.compiler == "Visual Studio":
             if self.options.shared:
                 self.copy(pattern="*.dll", dst="bin", keep_path=False)
             self.copy(pattern="*.lib", dst="lib", keep_path=False)
@@ -141,13 +143,16 @@ class OggConan(ConanFile):
             if self.options.shared:
                 if self.settings.os == "Macos":
                     self.copy(pattern="*.dylib", dst="lib", keep_path=False)
+                elif self.settings.os == "Windows":
+                    self.copy(pattern="*.dll", dst="bin", keep_path=False)
+                    self.copy(pattern="*.dll.a", dst="lib", keep_path=False)
                 else:
                     self.copy(pattern="*.so*", dst="lib", keep_path=False)
             else:
-                self.copy(pattern="*.a", dst="lib", keep_path=False)
+                self.copy(pattern="*g.a", dst="lib", keep_path=False)
      
     def package_info(self):
-        if self.settings.os == "Windows":
+        if self.settings.compiler == "Visual Studio":
             if self.options.shared:
                 self.cpp_info.libs = ['libogg']
             else:
