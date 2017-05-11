@@ -125,10 +125,10 @@ class OggConan(ConanFile):
                         self.run("%s && automake" % cd_build)
 
                     if self.settings.os == "Windows":
-                        self.run("%s && .\configure" % cd_build)
+                        run_in_windows_bash(self, "%s && ./configure" % cd_build)
                         self.run("%s && make" % cd_build)
                     else:
-                        self.run("%s && .\configure" % cd_build)
+                        run_in_windows_bash(self, "%s && ./configure" % cd_build)
                         self.run("%s && make" % cd_build)
 
     def package(self):
