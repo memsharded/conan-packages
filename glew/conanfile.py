@@ -1,6 +1,6 @@
 import subprocess, os
 from conans import ConanFile, CMake
-from conans.tools import build_sln_command, vcvars_command, download, unzip
+from conans.tools import build_sln_command, vcvars_command, download, unzip, replace_in_file
 
 class GlewConan(ConanFile):
     name = "glew"
@@ -72,6 +72,10 @@ class GlewConan(ConanFile):
             command = "%s && %s" % (vcvars_command(self.settings), build_command)
             self.run(command)
         else:
+            if self.settings.os == "Windows":
+                replace_in_file("%s/build/cmake/CMakeLists.txt" % self.ZIP_FOLDER_NAME, \
+                                "if(WIN32 AND (NOT MSVC_VERSION LESS 1600)", \
+                                "if(WIN32 AND MSVC AND (NOT MSVC_VERSION LESS 1600)")
             cmake = CMake(self)
             cmake.configure(source_dir="%s/build/cmake" % self.ZIP_FOLDER_NAME, defs={"BUILD_UTILS": "OFF"})
             cmake.build()
@@ -81,13 +85,20 @@ class GlewConan(ConanFile):
         self.copy("include/*", ".", "%s" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
         if self.settings.os == "Windows":
-            if self.options.shared:
-                self.copy(pattern="*32.lib", dst="lib", keep_path=False)
-                self.copy(pattern="*32d.lib", dst="lib", keep_path=False)
-                self.copy(pattern="*.dll", dst="bin", keep_path=False)
+            if self.settings.compiler == "Visual Studio":
+                if self.options.shared:
+                    self.copy(pattern="*32.lib", dst="lib", keep_path=False)
+                    self.copy(pattern="*32d.lib", dst="lib", keep_path=False)
+                    self.copy(pattern="*.dll", dst="bin", keep_path=False)
+                else:
+                    self.copy(pattern="*32s.lib", dst="lib", keep_path=False)
+                    self.copy(pattern="*32sd.lib", dst="lib", keep_path=False)
             else:
-                self.copy(pattern="*32s.lib", dst="lib", keep_path=False)
-                self.copy(pattern="*32sd.lib", dst="lib", keep_path=False)
+                if self.options.shared:
+                    self.copy(pattern="*32.dll.a", dst="lib", keep_path=False)
+                    self.copy(pattern="*.dll", dst="bin", keep_path=False)
+                else:
+                    self.copy(pattern="*32.a", dst="lib", keep_path=False)
         elif self.settings.os == "Macos":
             if self.options.shared:
                 self.copy(pattern="*.dylib", dst="lib", keep_path=False)
@@ -100,16 +111,22 @@ class GlewConan(ConanFile):
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        if self.settings.compiler == "Visual Studio":
+        if self.settings.os == "Windows":
             self.cpp_info.libs = ['glew32']
-            if not self.options.shared:
-                self.cpp_info.libs[0] += "s"
-                self.cpp_info.libs.append("OpenGL32.lib")
-                self.cpp_info.defines.append("GLEW_STATIC")
-                if self.settings.compiler.runtime != "MT":
-                    self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
-                    self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
 
+            if not self.options.shared:
+                self.cpp_info.defines.append("GLEW_STATIC")
+
+            if self.settings.compiler == "Visual Studio":
+                if not self.options.shared:
+                    self.cpp_info.libs[0] += "s"
+                    self.cpp_info.libs.append("OpenGL32.lib")
+                    if self.settings.compiler.runtime != "MT":
+                        self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
+                        self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
+            else:
+                self.cpp_info.libs.append("opengl32")
+                
         else:
             self.cpp_info.libs = ['GLEW']
             if self.settings.os == "Macos":
