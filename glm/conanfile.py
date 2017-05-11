@@ -8,6 +8,7 @@ class GlmConan(ConanFile):
     ZIP_FOLDER_NAME = "%s-%s" % (name, version)
     generators = "txt"
     url="http://github.com/dimi309/conan-packages"
+    description="The GLM library"
     requires = ""
     license = "https://github.com/nigels-com/glew#copyright-and-licensing"
     exports = "FindGLM.cmake"
