@@ -45,6 +45,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CONAN_SHARED_LINKER_FLAGS}")
 
                         """)
 
+        replace_in_file("%s/small3d/src/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "${OPENGL_LIBRARIES}", "")
         replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, 'file(COPY "small3d/include" DESTINATION ".")', """
 if(FALSE)
 file(COPY "small3d/include" DESTINATION ".")
