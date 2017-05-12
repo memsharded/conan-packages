@@ -32,13 +32,20 @@ class Small3dConan(ConanFile):
         if self.settings.os == "Windows" and self.settings.compiler != "Visual Studio":
             self.output.error("On Windows, only Visual Studio compilation is supported for the time being.")
             quit()
+
+        use_cxx11_abi = ""
+
+        if self.settings.compiler == "gcc":
+            if self.settings.compiler.version >= 5.1:
+                use_cxx11_abi = "add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)"
         
         replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "project(small3d)",
                         """
 project(small3d)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
-                        """)
+%s
+                        """ % use_cxx11_abi)
 
         replace_in_file("%s/small3d/src/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "${OPENGL_LIBRARIES}", "")
         replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, 'file(COPY "small3d/include" DESTINATION ".")', """
