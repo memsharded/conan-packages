@@ -32,19 +32,18 @@ class Small3dConan(ConanFile):
         if self.settings.os == "Windows" and self.settings.compiler != "Visual Studio":
             self.output.error("On Windows, only Visual Studio compilation is supported for the time being.")
             quit()
-        
+
         replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "project(small3d)",
                         """
 project(small3d)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
-
-set(CMAKE_C_FLAGS "${CONAN_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CONAN_CXX_FLAGS}")
-set(CMAKE_SHARED_LINKER_FLAGS "${CONAN_SHARED_LINKER_FLAGS}")
-
+if(CMAKE_COMPILER_IS_GNUCXX)
+add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
+endif(CMAKE_COMPILER_IS_GNUCXX)
                         """)
 
+        replace_in_file("%s/small3d/src/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "${OPENGL_LIBRARIES}", "")
         replace_in_file("%s/CMakeLists.txt" % self.ZIP_FOLDER_NAME, 'file(COPY "small3d/include" DESTINATION ".")', """
 if(FALSE)
 file(COPY "small3d/include" DESTINATION ".")
@@ -97,10 +96,7 @@ endif()
             self.cpp_info.cppflags.append("/EHsc")
             self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
             self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
-        elif self.settings.os == "Macos":
-            self.cpp_info.cppflags.append("-std=c++11")
-            self.cpp_info.cppflags.append("-stdlib=libc++")
         else:
             self.cpp_info.cppflags.append("-std=c++11")
-            self.cpp_info.cppflags.append("-Wl,--no-as-needed")
-            
+            if self.settings.os == "Macos":
+                self.cpp_info.cppflags.append("-stdlib=libc++")
