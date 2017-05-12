@@ -98,10 +98,7 @@ endif()
             self.cpp_info.cppflags.append("/EHsc")
             self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
             self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
-        elif self.settings.os == "Macos":
-            self.cpp_info.cppflags.append("-std=c++11")
-            self.cpp_info.cppflags.append("-stdlib=libc++")
         else:
             self.cpp_info.cppflags.append("-std=c++11")
-            self.cpp_info.cppflags.append("-Wl,--no-as-needed")
-            
+            if self.settings.os == "Macos":
+                self.cpp_info.cppflags.append("-stdlib=libc++")
