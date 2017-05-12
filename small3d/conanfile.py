@@ -38,11 +38,6 @@ class Small3dConan(ConanFile):
 project(small3d)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
-
-set(CMAKE_C_FLAGS "${CONAN_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CONAN_CXX_FLAGS}")
-set(CMAKE_SHARED_LINKER_FLAGS "${CONAN_SHARED_LINKER_FLAGS}")
-
                         """)
 
         replace_in_file("%s/small3d/src/CMakeLists.txt" % self.ZIP_FOLDER_NAME, "${OPENGL_LIBRARIES}", "")
