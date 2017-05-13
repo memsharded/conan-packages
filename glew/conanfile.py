@@ -92,6 +92,7 @@ class GlewConan(ConanFile):
                     self.copy(pattern="*32.lib", dst="lib", keep_path=False)
                     self.copy(pattern="*32d.lib", dst="lib", keep_path=False)
                     self.copy(pattern="*.dll", dst="bin", keep_path=False)
+                    self.copy(pattern="*.pdb", dst="bin", keep_path=False)
                 else:
                     self.copy(pattern="*32s.lib", dst="lib", keep_path=False)
                     self.copy(pattern="*32sd.lib", dst="lib", keep_path=False)
