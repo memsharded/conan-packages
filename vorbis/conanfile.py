@@ -53,7 +53,7 @@ class VorbisConan(ConanFile):
                 replace_in_file("%s\\win32\\VS2010\\libvorbisfile\\libvorbisfile%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
                 replace_in_file("%s\\win32\\VS2010\\vorbisdec\\vorbisdec%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
                 replace_in_file("%s\\win32\\VS2010\\vorbisenc\\vorbisenc%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-                cd_build = "cd %s\\win32\\VS2010" % self.ZIP_FOLDER_NAME
+                cd_build = "cd %s\\%s\\win32\\VS2010" % (self.conanfile_directory, self.ZIP_FOLDER_NAME)
                 self.run("%s && %s && devenv vorbis%s.sln /upgrade" % (vcvars, cd_build, vs_suffix))
                 platform = "Win32" if self.settings.arch == "x86" else "x64"
                 self.run("%s && %s & msbuild vorbis%s.sln /property:Configuration=%s /property:Platform=%s" %
