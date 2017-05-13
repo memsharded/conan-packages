@@ -1,5 +1,4 @@
 test_package/build
-test/build
 libogg*
 conanfile.pyc
 conaninfo.txt
