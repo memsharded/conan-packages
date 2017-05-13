@@ -15,7 +15,7 @@ class TestVorbis(ConanFile):
         self.run("cmake --build . %s" % cmake.build_config)
 
     def test(self):
-        self.run(os.sep.join([".","bin", "testVorbis"]))
+        self.run(os.sep.join(["cd bin && .", "testVorbis"]))
 
     def imports(self):
         self.copy(pattern="*.dll", dst="bin", src="bin")
