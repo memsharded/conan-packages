@@ -96,7 +96,7 @@ class OggConan(ConanFile):
                     "MDd": "MultiThreadedDebugDLL"
                 }
                 replace_in_file_regex(
-                    "%s\\win32\\VS2010\\%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_project),
+                    "%s\\%s\\win32\\VS2010\\%s.vcxproj" % (self.conanfile_directory, self.ZIP_FOLDER_NAME, vs_project),
                     r"<RuntimeLibrary>\w+</RuntimeLibrary>",
                     "<RuntimeLibrary>%s</RuntimeLibrary>" % vs_runtime.get(str(self.settings.compiler.runtime), "Invalid"))
 
@@ -113,9 +113,9 @@ class OggConan(ConanFile):
                 if self.settings.os == "Macos":
                     old_str = '-install_name \\$rpath/\\$soname'
                     new_str = '-install_name \\$soname'
-                    replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
+                    replace_in_file("%s/%s/configure" % (self.conanfile_directory, self.ZIP_FOLDER_NAME), old_str, new_str)
             
-                cd_build = "cd %s" % self.ZIP_FOLDER_NAME
+                cd_build = "cd %s/%s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME)
 
                 with tools.environment_append(env.vars):
                     
