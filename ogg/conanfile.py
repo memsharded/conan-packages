@@ -1,5 +1,5 @@
 from conans import ConanFile, AutoToolsBuildEnvironment, VisualStudioBuildEnvironment, tools
-from conans.tools import download, unzip, replace_in_file
+from conans.tools import download, unzip, replace_in_file, build_sln_command
 from conans.util.files import load
 import os, subprocess, re
 
@@ -22,7 +22,7 @@ class OggConan(ConanFile):
     description="The OGG library"
     requires = ""
     license="BSD"
-    exports = "*"
+    exports = "FindOGG.cmake"
 
     def rpm_package_installed(self, package):
         p = subprocess.Popen(['rpm', '-q', package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -83,15 +83,12 @@ class OggConan(ConanFile):
                 
             env = VisualStudioBuildEnvironment(self)
             with tools.environment_append(env.vars):
-                vcvars = tools.vcvars_command(self.settings)
-            
+                
                 if self.options.shared:
                     vs_project = "libogg_dynamic"
                 else:
                     vs_project = "libogg_static"
 
-                cd_build = "cd %s\\%s\\win32\\VS2010" % (self.conanfile_directory, self.ZIP_FOLDER_NAME)
-                self.run("%s && %s && devenv %s.sln /upgrade" % (vcvars, cd_build, vs_project))
                 vs_runtime = {
                     "MT": "MultiThreaded",
                     "MTd": "MultiThreadedDebug",
@@ -102,9 +99,12 @@ class OggConan(ConanFile):
                     "%s\\win32\\VS2010\\%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_project),
                     r"<RuntimeLibrary>\w+</RuntimeLibrary>",
                     "<RuntimeLibrary>%s</RuntimeLibrary>" % vs_runtime.get(str(self.settings.compiler.runtime), "Invalid"))
-                platform = "Win32" if self.settings.arch == "x86" else "x64"
-                self.run("%s && %s && msbuild %s.sln /property:Configuration=%s /property:Platform=%s" % \
-            (vcvars, cd_build, vs_project, self.settings.build_type, platform))
+
+                vcvars = tools.vcvars_command(self.settings)
+                cd_build = "cd %s\\%s\\win32\\VS2010" % (self.conanfile_directory, self.ZIP_FOLDER_NAME)
+                build_command = build_sln_command(self.settings, "%s.sln" % vs_project)
+                
+                self.run("%s && %s && %s" % (vcvars, cd_build, build_command))
         else:
             env = AutoToolsBuildEnvironment(self)
             with tools.environment_append(env.vars):
@@ -136,6 +136,7 @@ class OggConan(ConanFile):
         if self.settings.os == "Windows":
             if self.options.shared:
                 self.copy(pattern="*.dll", dst="bin", keep_path=False)
+                self.copy(pattern="*.pdb", dst="bin", keep_path=False)
             self.copy(pattern="*.lib", dst="lib", keep_path=False)
         else:
             if self.options.shared:
