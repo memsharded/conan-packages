@@ -55,6 +55,7 @@ class OggConan(ConanFile):
         if self.settings.os == "Linux":
             if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
                 self.ensure_debian_dependency("libtool")
+                self.ensure_debian_dependency("dh-autoreconf")
             elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
                 self.ensure_rpm_dependency("libtool")
             else:
