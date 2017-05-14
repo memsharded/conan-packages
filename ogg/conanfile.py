@@ -113,8 +113,14 @@ class OggConan(ConanFile):
                     old_str = '-install_name \\$rpath/\\$soname'
                     new_str = '-install_name \\$soname'
                     replace_in_file("%s/%s/configure" % (self.conanfile_directory, self.ZIP_FOLDER_NAME), old_str, new_str)
-            
-                cd_build = "cd %s/%s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME)
+
+                # Later, run_in_windows_bash is executed for Windows builds. The command starts in the directory
+                # of the package, so prefixing it is not necessary and it doesn't work either because of
+                # the backslashes which are contained in self.conanfile_directory, since conanfile_directory
+                # is prepared by conan for Windows in this case.
+                base_path = ("%s/" % self.conanfile_directory) if self.settings.os != "Windows" else ""
+
+                cd_build = "cd %s%s" % (base_path, self.ZIP_FOLDER_NAME)
 
                 with tools.environment_append(env.vars):
                     
