@@ -79,6 +79,7 @@ endif()
 
         if self.settings.os == "Windows":
             self.copy(pattern="*.dll", dst="bin", keep_path=False)
+            self.copy(pattern="*.pdb", dst="bin", keep_path=False)
             self.copy(pattern="*.lib", dst="lib", keep_path=False)
         else:
             if self.settings.os == "Macos":

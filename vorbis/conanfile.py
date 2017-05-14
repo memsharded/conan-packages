@@ -1,5 +1,5 @@
 from conans import ConanFile, AutoToolsBuildEnvironment, VisualStudioBuildEnvironment, tools
-from conans.tools import download, unzip, replace_in_file
+from conans.tools import download, unzip, replace_in_file, build_sln_command
 import os
 class VorbisConan(ConanFile):
     name = "vorbis"
@@ -13,15 +13,13 @@ class VorbisConan(ConanFile):
     description="The VORBIS library"
     requires = "ogg/1.3.2@coding3d/stable"
     license="BSD"
-    exports = "*"
+    exports = "FindVORBIS.cmake"
 
     def configure(self):
         del self.settings.compiler.libcxx
 
         if self.settings.os == "Windows":
             self.options.remove("fPIC")
-        else:
-            self.options.remove("shared")
 
     def source(self):
         zip_name = "%s.tar.gz" % self.ZIP_FOLDER_NAME
@@ -40,7 +38,6 @@ class VorbisConan(ConanFile):
             
             env = VisualStudioBuildEnvironment(self)
             with tools.environment_append(env.vars):
-                vcvars = tools.vcvars_command(self.settings)
             
                 if self.options.shared:
                     vs_suffix = "_dynamic"
@@ -49,27 +46,33 @@ class VorbisConan(ConanFile):
 
                 libdirs="<AdditionalLibraryDirectories>"
                 libdirs_ext="<AdditionalLibraryDirectories>$(LIB);"
-                replace_in_file("%s\\win32\\VS2010\\libvorbis\\libvorbis%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-                replace_in_file("%s\\win32\\VS2010\\libvorbisfile\\libvorbisfile%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-                replace_in_file("%s\\win32\\VS2010\\vorbisdec\\vorbisdec%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-                replace_in_file("%s\\win32\\VS2010\\vorbisenc\\vorbisenc%s.vcxproj" % (self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
-                cd_build = "cd %s\\win32\\VS2010" % self.ZIP_FOLDER_NAME
-                self.run("%s && %s && devenv vorbis%s.sln /upgrade" % (vcvars, cd_build, vs_suffix))
-                platform = "Win32" if self.settings.arch == "x86" else "x64"
-                self.run("%s && %s & msbuild vorbis%s.sln /property:Configuration=%s /property:Platform=%s" %
-                         (vcvars, cd_build, vs_suffix, self.settings.build_type, platform))
+                replace_in_file("%s\\%s\\win32\\VS2010\\libvorbis\\libvorbis%s.vcxproj" %
+                                (self.conanfile_directory, self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+                replace_in_file("%s\\%s\\win32\\VS2010\\libvorbisfile\\libvorbisfile%s.vcxproj" %
+                                (self.conanfile_directory, self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+                replace_in_file("%s\\%s\\win32\\VS2010\\vorbisdec\\vorbisdec%s.vcxproj" %
+                                (self.conanfile_directory, self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+                replace_in_file("%s\\%s\\win32\\VS2010\\vorbisenc\\vorbisenc%s.vcxproj" %
+                                (self.conanfile_directory, self.ZIP_FOLDER_NAME, vs_suffix), libdirs, libdirs_ext)
+                
+                vcvars = tools.vcvars_command(self.settings)
+                cd_build = "cd %s\\%s\\win32\\VS2010" % (self.conanfile_directory, self.ZIP_FOLDER_NAME)
+                build_command = build_sln_command(self.settings, "vorbis%s.sln" % vs_suffix)
+
+                self.run("%s && %s && %s" % (vcvars, cd_build, build_command))
+
         else:
             env = AutoToolsBuildEnvironment(self)
             with tools.environment_append(env.vars):
-                env.fpic = self.options.fPIC
-
-                cd_build = "cd %s" % self.ZIP_FOLDER_NAME
+                env.fpic = self.options.fPIC 
 
                 if self.settings.os == "Macos":
                     old_str = '-install_name \\$rpath/\\$soname'
                     new_str = '-install_name \\$soname'
-                    replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
+                    replace_in_file("%s/%s/configure" % (self.conanfile_directory, self.ZIP_FOLDER_NAME), old_str, new_str)
 
+                cd_build = "cd %s/%s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME)
+                
                 self.run("%s && chmod +x ./configure && ./configure" % cd_build)
                 self.run("%s && make" % cd_build)
 
@@ -80,12 +83,20 @@ class VorbisConan(ConanFile):
         if self.settings.os == "Windows":
             if self.options.shared:
                 self.copy(pattern="*.dll", dst="bin", keep_path=False)
+                self.copy(pattern="*.pdb", dst="bin", keep_path=False)
             self.copy(pattern="*.lib", dst="lib", keep_path=False)
         else:
-            if self.settings.os == "Macos":
-                self.copy(pattern="*.a", dst="lib", keep_path=False)
+            if self.options.shared:
+                if self.settings.os == "Macos":
+                    self.copy(pattern="*.dylib", dst="lib", keep_path=False)
+                else:
+                    self.copy(pattern="*.so*", dst="lib", keep_path=False)
             else:
-                self.copy(pattern="*.so*", dst="lib", keep_path=False)
+                if self.settings.os == "Macos":
+                    self.copy(pattern="*.a", dst="lib", keep_path=False)
+                else:
+                    self.output.warn("Static linking with the library does not work so well. Packaging dynamic version.")
+                    self.copy(pattern="*.so*", dst="lib", keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Windows":

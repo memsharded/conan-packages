@@ -1,5 +1,5 @@
 import subprocess, os
-from conans import ConanFile, CMake
+from conans import ConanFile, CMake, VisualStudioBuildEnvironment, tools
 from conans.tools import build_sln_command, vcvars_command, download, unzip, replace_in_file
 
 class GlewConan(ConanFile):
@@ -65,12 +65,14 @@ class GlewConan(ConanFile):
 
     def build(self):
         if self.settings.compiler == "Visual Studio":
-            version = min(12, int(self.settings.compiler.version.value))
-            version = 10 if version == 11 else version
-            path = "%s\\build\\vc%s" % (self.ZIP_FOLDER_NAME, version)
-            build_command = build_sln_command(self.settings, "%s\\glew.sln" % path)
-            command = "%s && %s" % (vcvars_command(self.settings), build_command)
-            self.run(command)
+            env = VisualStudioBuildEnvironment(self)
+            with tools.environment_append(env.vars):
+                version = min(12, int(self.settings.compiler.version.value))
+                version = 10 if version == 11 else version
+                cd_build = "cd %s\\%s\\build\\vc%s" % (self.conanfile_directory, self.ZIP_FOLDER_NAME, version)
+                build_command = build_sln_command(self.settings, "glew.sln")
+                vcvars = vcvars_command(self.settings)
+                self.run("%s && %s && %s" % (vcvars, cd_build, build_command))
         else:
             if self.settings.os == "Windows":
                 replace_in_file("%s/build/cmake/CMakeLists.txt" % self.ZIP_FOLDER_NAME, \
@@ -90,6 +92,7 @@ class GlewConan(ConanFile):
                     self.copy(pattern="*32.lib", dst="lib", keep_path=False)
                     self.copy(pattern="*32d.lib", dst="lib", keep_path=False)
                     self.copy(pattern="*.dll", dst="bin", keep_path=False)
+                    self.copy(pattern="*.pdb", dst="bin", keep_path=False)
                 else:
                     self.copy(pattern="*32s.lib", dst="lib", keep_path=False)
                     self.copy(pattern="*32sd.lib", dst="lib", keep_path=False)

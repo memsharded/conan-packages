@@ -4,10 +4,13 @@ import os
 channel = os.getenv("CONAN_CHANNEL", "testing")
 username = os.getenv("CONAN_USERNAME", "coding3d")
 
-class TestVorbis(ConanFile):
+class TestOgg(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    requires = "vorbis/1.3.5@%s/%s" % (username, channel)
+    requires = "ogg/1.3.2@%s/%s" % (username, channel)
     generators = "cmake"
+
+    def configure(self):
+        del self.settings.compiler.libcxx
 
     def build(self):
         cmake = CMake(self.settings)
@@ -15,7 +18,7 @@ class TestVorbis(ConanFile):
         self.run("cmake --build . %s" % cmake.build_config)
 
     def test(self):
-        self.run(os.sep.join([".","bin", "testVorbis"]))
+        self.run(os.sep.join(["cd bin && .", "testOgg"]))
 
     def imports(self):
         self.copy(pattern="*.dll", dst="bin", src="bin")
