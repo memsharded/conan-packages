@@ -92,11 +92,7 @@ class VorbisConan(ConanFile):
                 else:
                     self.copy(pattern="*.so*", dst="lib", keep_path=False)
             else:
-                if self.settings.os == "Macos":
-                    self.copy(pattern="*.a", dst="lib", keep_path=False)
-                else:
-                    self.output.warn("Static linking with the library does not work so well. Packaging dynamic version.")
-                    self.copy(pattern="*.so*", dst="lib", keep_path=False)
+                self.copy(pattern="*.a", dst="lib", keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Windows":
@@ -107,4 +103,4 @@ class VorbisConan(ConanFile):
                 self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
                 self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
         else:
-            self.cpp_info.libs = ['vorbis', 'vorbisfile', 'vorbisenc']
+            self.cpp_info.libs = ['vorbisfile', 'vorbisenc', 'vorbis']
