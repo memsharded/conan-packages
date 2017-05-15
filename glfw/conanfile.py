@@ -87,14 +87,16 @@ class GlfwConan(ConanFile):
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        if self.settings.os == "Macos":
-            if self.options.shared:
-                self.cpp_info.libs = ['glfw']
-            else:
-                self.cpp_info.libs = ['glfw3']
-                self.cpp_info.exelinkflags.append("-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
-        elif self.settings.os == "Windows":
+        if self.settings.compiler == "Visual Studio":
             self.cpp_info.libs = ['glfw3']
         else:
-            self.cpp_info.libs = ['glfw']
-            self.cpp_info.exelinkflags.append("-lXrandr -ldl")
+            if self.options.shared:
+                self.cpp_info.libs = ['glfw']
+                if self.settings.os == "Linux":
+                    self.cpp_info.exelinkflags.append("-lXrandr -ldl")
+            else:
+                self.cpp_info.libs = ['glfw3']
+                if self.settings.os == "Macos":
+                    self.cpp_info.exelinkflags.append("-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
+                if self.settings.os == "Linux":
+                    self.cpp_info.exelinkflags.append("-lXrandr -lXrender -lXi -lGL -lm -ldl -ldrm -lXdamage -lX11-xcb -lxcb-glx -lxcb-dri2 -lxcb-dri3 -lxcb-present -lxcb-sync -lxshmfence -lXxf86vm -lXfixes -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -lXcursor -lXinerama")
