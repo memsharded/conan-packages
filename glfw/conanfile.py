@@ -88,7 +88,10 @@ class GlfwConan(ConanFile):
 
     def package_info(self):
         if self.settings.compiler == "Visual Studio":
-            self.cpp_info.libs = ['glfw3']
+            if self.options.shared:
+                self.cpp_info.libs = ['glfw3dll']
+            else:
+                self.cpp_info.libs = ['glfw3']
         else:
             if self.options.shared:
                 self.cpp_info.libs = ['glfw']
