@@ -102,5 +102,5 @@ class GlfwConan(ConanFile):
                 if self.settings.os == "Macos":
                     self.cpp_info.exelinkflags.append("-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
                 if self.settings.os == "Linux":
-                    self.cpp_info.exelinkflags.append("-lXlib -lX11 -lXrandr -lXinerama -lXxf86vm -lXcursor -lrt -lm -ldl -lpthread")
+                    self.cpp_info.exelinkflags.append("-lX11 -lXrandr -lXinerama -lXxf86vm -lXcursor -lrt -lm -ldl -lpthread")
 
