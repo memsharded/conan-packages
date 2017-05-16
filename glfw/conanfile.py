@@ -10,7 +10,7 @@ class GlfwConan(ConanFile):
     generators = "cmake"
     settings = "os", "arch", "build_type", "compiler"
     options = {"shared": [True, False]}
-    default_options = "shared=False"
+    default_options = "shared=True"
     url="http://github.com/dimi309/conan-packages"
     license="https://github.com/glfw/glfw/blob/master/LICENSE.md"
     exports = "FindGLFW.cmake"
