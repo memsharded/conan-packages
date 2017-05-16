@@ -87,9 +87,6 @@ class GlfwConan(ConanFile):
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.output.info("conan-detected os: %s" % self.settings.os)
-        btype = "shared" if self.options.shared else "static"
-        self.output.info("packaging %s library" % btype)
         if self.settings.compiler == "Visual Studio":
             if self.options.shared:
                 self.cpp_info.libs = ['glfw3dll']
@@ -99,11 +96,11 @@ class GlfwConan(ConanFile):
             if self.options.shared:
                 self.cpp_info.libs = ['glfw']
                 if self.settings.os == "Linux":
-                    self.cpp_info.exelinkflags.append("-lXrandr -ldl")
+                    self.cpp_info.exelinkflags.append("-lrt -lm -ldl")
             else:
                 self.cpp_info.libs = ['glfw3']
                 if self.settings.os == "Macos":
                     self.cpp_info.exelinkflags.append("-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
                 if self.settings.os == "Linux":
-                    self.cpp_info.exelinkflags.append("-lXrandr -lXrender -lGL -lm -ldl -ldrm -lXdamage -lX11-xcb -lxcb-glx -lxcb-dri2 -lxcb-dri3 -lxcb-present -lxcb-sync -lXxf86vm -lXfixes -lXext -lX11 -lpthread -lxcb -lXau -lXcursor -lXinerama")
-        self.output.info("Link flags set: %s" % self.cpp_info.exelinkflags)
+                    self.cpp_info.exelinkflags.append("-lX11 -lXrandr -lXinerama -lXxf86vm -lXcursor -lrt -lm -ldl")
+
