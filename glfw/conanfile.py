@@ -1,5 +1,5 @@
 from conans import ConanFile, CMake
-from conans.tools import download, unzip
+from conans.tools import download, unzip, os_info
 import os, subprocess
 
 class GlfwConan(ConanFile):
@@ -43,17 +43,18 @@ class GlfwConan(ConanFile):
                 exit(1)
 
     def system_requirements(self):
-        if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
-            self.ensure_debian_dependency("libglu1-mesa-dev")
-            self.ensure_debian_dependency("xorg-dev")
-        elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
-            self.ensure_rpm_dependency("mesa-libGL-devel")
-            self.ensure_rpm_dependency("xorg-x11-server-devel")
-            self.ensure_rpm_dependency("libXrandr-devel")
-            self.ensure_rpm_dependency("libXinerama-devel")
-            self.ensure_rpm_dependency("libXcursor-devel")
-        else:
-            self.output.warn("Could not determine package manager, skipping Linux system requirements installation.")
+        if os_info.is_linux:
+            if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
+                self.ensure_debian_dependency("libglu1-mesa-dev")
+                self.ensure_debian_dependency("xorg-dev")
+            elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
+                self.ensure_rpm_dependency("mesa-libGL-devel")
+                self.ensure_rpm_dependency("xorg-x11-server-devel")
+                self.ensure_rpm_dependency("libXrandr-devel")
+                self.ensure_rpm_dependency("libXinerama-devel")
+                self.ensure_rpm_dependency("libXcursor-devel")
+            else:
+                self.output.warn("Could not determine package manager, skipping Linux system requirements installation.")
 
     def source(self):
         download("https://github.com/glfw/glfw/archive/%s.zip" % self.version, "%s.zip" % self.ZIP_FOLDER_NAME)

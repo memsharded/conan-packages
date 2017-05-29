@@ -1,5 +1,5 @@
 from conans import ConanFile, CMake
-from conans.tools import download, unzip, replace_in_file
+from conans.tools import download, unzip, replace_in_file, os_info
 import os
 
 class Small3dConan(ConanFile):
@@ -46,12 +46,13 @@ class Small3dConan(ConanFile):
                 exit(1)
 
     def system_requirements(self):
-        if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
-            self.ensure_debian_dependency("libglu1-mesa-dev")
-        elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
-            self.ensure_rpm_dependency("mesa-libGL-devel")
-        else:
-            self.output.warn("Could not determine package manager, skipping Linux system requirements installation.")
+        if os_info.is_linux:
+            if subprocess.call("which apt-get", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
+                self.ensure_debian_dependency("libglu1-mesa-dev")
+            elif subprocess.call("which yum", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
+                self.ensure_rpm_dependency("mesa-libGL-devel")
+            else:
+                self.output.warn("Could not determine package manager, skipping Linux system requirements installation.")
     
     def source(self):        
         download("https://github.com/dimi309/small3d/archive/%s.zip" % self.version, "%s.zip" % self.ZIP_FOLDER_NAME)
