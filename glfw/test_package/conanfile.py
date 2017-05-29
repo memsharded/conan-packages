@@ -2,7 +2,7 @@ from conans import ConanFile, CMake
 import os
 
 channel = os.getenv("CONAN_CHANNEL", "testing")
-username = os.getenv("CONAN_USERNAME", "coding3d")
+username = os.getenv("CONAN_USERNAME", "dimi309")
 
 class TestGlfw(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
