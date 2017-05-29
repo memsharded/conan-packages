@@ -1,5 +1,5 @@
 find_path(GLEW_INCLUDE_DIR NAMES GL PATHS include)
-find_library(GLEW_LIBRARY NAMES GLEW glew32 glew32s glew32d glew32sd PATHS lib )
+find_library(GLEW_LIBRARY NAMES GLEW GLEWd glew32 glew32s glew32d glew32sd PATHS lib )
 
 MESSAGE("** GLEW FOUND BY CONAN")
 SET(GLEW_FOUND TRUE)
