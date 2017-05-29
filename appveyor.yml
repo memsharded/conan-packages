@@ -26,11 +26,11 @@ test_script:
   - C:\Python27\python build.py
   - cd ..
   - cd glfw
-  - set CONAN_REFERNCE=glfw/3.2.1
+  - set CONAN_REFERENCE=glfw/3.2.1
   - C:\Python27\python build.py
   - cd ..
   - cd glm
-  - set CONAN_REFERNCE=glm/0.9.8.4
+  - set CONAN_REFERENCE=glm/0.9.8.4
   - C:\Python27\python build.py
   - cd ..
   - cd ogg
