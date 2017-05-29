@@ -64,8 +64,6 @@ class GlfwConan(ConanFile):
     def build(self):
         cmake = CMake(self)
         dynlib = '-DBUILD_SHARED_LIBS=ON' if self.options.shared else '-DBUILD_SHARED_LIBS=OFF'
-        if self.settings.os == "Macos":
-            dynlib = '-DBUILD_SHARED_LIBS=OFF' # Due to certain issues, only the static library is built for OSX.
         self.run("cmake %s/%s %s %s -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF" %
                  (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line, dynlib))
         self.run("cmake --build %s %s" % (self.conanfile_directory, cmake.build_config))
@@ -85,8 +83,7 @@ class GlfwConan(ConanFile):
                 if self.settings.os == "Linux":
                     self.copy(pattern="*.so*", dst="lib", keep_path=False)
                 elif self.settings.os == "Macos":
-                    self.output.warn("Due to certain issues, only the static library is built for OSX.")
-                    self.copy(pattern="*.a", dst="lib", keep_path=False)
+                    self.copy(pattern="*.dylib", dst="lib", keep_path=False)
             else:
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
 
@@ -97,14 +94,13 @@ class GlfwConan(ConanFile):
             else:
                 self.cpp_info.libs = ['glfw3']
         else:
-            if self.options.shared and self.settings.os != "Macos":
+            if self.options.shared:
                 self.cpp_info.libs = ['glfw']
                 if self.settings.os == "Linux":
                     self.cpp_info.exelinkflags.append("-lrt -lm -ldl")
             else:
                 self.cpp_info.libs = ['glfw3']
                 if self.settings.os == "Macos":
-                    self.cpp_info.libs = ['glfw']
                     self.cpp_info.exelinkflags.append("-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
                 if self.settings.os == "Linux":
                     self.cpp_info.exelinkflags.append("-lX11 -lXrandr -lXinerama -lXxf86vm -lXcursor -lrt -lm -ldl -lpthread")
