@@ -97,7 +97,7 @@ class GlfwConan(ConanFile):
             else:
                 self.cpp_info.libs = ['glfw3']
         else:
-            if self.options.shared:
+            if self.options.shared and self.settings.os != "Macos":
                 self.cpp_info.libs = ['glfw']
                 if self.settings.os == "Linux":
                     self.cpp_info.exelinkflags.append("-lrt -lm -ldl")
