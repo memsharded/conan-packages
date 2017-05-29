@@ -21,5 +21,6 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
 fi
 
 pip install conan_package_tools # It install conan too
-conan remote add bintray https://api.bintray.com/conan/dimi309/conan-packages
-conan user -r"bintray" dimi309
+conan remote remove conan.io
+conan remote add conan.io https://api.bintray.com/conan/dimi309/conan-packages
+conan remote add oldconan https://server.conan.io
