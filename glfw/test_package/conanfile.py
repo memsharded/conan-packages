@@ -16,3 +16,7 @@ class TestGlfw(ConanFile):
 
     def test(self):
         self.run(os.sep.join(["cd bin && .", "test_glfw"]))
+    
+    def imports(self):
+        self.copy("*.dll", "bin", "bin")
+        self.copy("*.dylib", "bin", "bin")
