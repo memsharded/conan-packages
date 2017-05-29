@@ -63,9 +63,9 @@ class GlfwConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        dynlib = '-DBUILD_SHARED_LIBS=ON' if self.options.shared else ''
+        dynlib = '-DBUILD_SHARED_LIBS=ON' if self.options.shared else '-DBUILD_SHARED_LIBS=OFF'
         if self.settings.os == "Macos":
-            dynlib = '' # Due to certain issues, only the static library is built for OSX.
+            dynlib = '-DBUILD_SHARED_LIBS=OFF' # Due to certain issues, only the static library is built for OSX.
         self.run("cmake %s/%s %s %s -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF" %
                  (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line, dynlib))
         self.run("cmake --build %s %s" % (self.conanfile_directory, cmake.build_config))
