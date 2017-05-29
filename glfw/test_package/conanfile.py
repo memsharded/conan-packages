@@ -15,4 +15,4 @@ class TestGlfw(ConanFile):
         self.run("cmake --build . %s" % cmake.build_config)
 
     def test(self):
-        self.run(os.sep.join([".","bin", "test_glfw"]))
+        self.run(os.sep.join(["cd bin && ./", "test_glfw"]))
