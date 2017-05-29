@@ -32,4 +32,4 @@ python build.py
 cd ..
 cd small3d
 export CONAN_REFERENCE=small3d/master
-python build.py
+#python build.py
