@@ -83,7 +83,8 @@ class GlfwConan(ConanFile):
                 if self.settings.os == "Linux":
                     self.copy(pattern="*.so*", dst="lib", keep_path=False)
                 elif self.settings.os == "Macos":
-                    self.copy(pattern="*.dylib", dst="lib", keep_path=False)
+                    self.output.warn("Due to certain issues, only the static library is built for OSX.")
+                    self.copy(pattern="*.a", dst="lib", keep_path=False)
             else:
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
 
