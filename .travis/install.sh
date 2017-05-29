@@ -23,4 +23,3 @@ fi
 pip install conan_package_tools # It install conan too
 conan remote remove conan.io
 conan remote add conan.io https://api.bintray.com/conan/dimi309/coding3d
-conan user -p $APIKEY -r"conan.io" dimi309
