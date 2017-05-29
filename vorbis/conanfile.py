@@ -11,7 +11,7 @@ class VorbisConan(ConanFile):
     default_options = "shared=False", "fPIC=True"
     url="http://github.com/dimi309/conan-packages"
     description="The VORBIS library"
-    requires = "ogg/1.3.2@coding3d/stable"
+    requires = "ogg/1.3.2@dimi309/stable"
     license="BSD"
     exports = "FindVORBIS.cmake"
 
