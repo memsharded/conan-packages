@@ -92,7 +92,11 @@ class VorbisConan(ConanFile):
                 else:
                     self.copy(pattern="*.so*", dst="lib", keep_path=False)
             else:
-                self.copy(pattern="*.a", dst="lib", keep_path=False)
+                if self.settings.os == "Macos":
+                    self.copy(pattern="*.a", dst="lib", keep_path=False)
+                else:
+                    self.output.warn('The package has some issues on Linux when statically linked. Using shared library instead.')
+                    self.copy(pattern="*.so*", dst="lib", keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Windows":
