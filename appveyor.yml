@@ -43,5 +43,5 @@ test_script:
   - cd ..
   - cd small3d
   - set CONAN_REFERENCE=small3d/master
-#  - C:\Python27\python build.py
+  - C:\Python27\python build.py
 
