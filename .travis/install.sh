@@ -22,5 +22,5 @@ fi
 
 pip install conan_package_tools # It install conan too
 conan remote remove conan.io
-conan remote add conan.io https://api.bintray.com/conan/dimi309/coding3d
+conan remote add conan.io https://api.bintray.com/conan/dimi309/conan-packages
 conan user
