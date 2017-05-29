@@ -24,10 +24,6 @@ matrix:
          language: generic
          env:
        - os: osx
-         osx_image: xcode8.0 
-         language: generic
-         env:
-       - os: osx
          osx_image: xcode8.1 
          language: generic
          env:
