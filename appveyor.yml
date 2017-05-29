@@ -4,7 +4,6 @@ environment:
     PYTHON_VERSION: "2.7.8"
     PYTHON_ARCH: "32"
     CONAN_UPLOAD: 1
-#    CONAN_REFERENCE: "glew/2.0.0"
     CONAN_USERNAME: "coding3d"
     CONAN_CHANNEL: "testing"
     CONAN_TOTAL_PAGES: 4
@@ -23,20 +22,26 @@ install:
 
 test_script:
   - cd glew
+  - set CONAN_REFERENCE=glew/2.0.0
   - C:\Python27\python build.py
   - cd ..
   - cd glfw
+  - set CONAN_REFERNCE=glfw/3.2.1
   - C:\Python27\python build.py
   - cd ..
   - cd glm
+  - set CONAN_REFERNCE=glm/0.9.8.4
   - C:\Python27\python build.py
   - cd ..
   - cd ogg
+  - set CONAN_REFERENCE=ogg/1.3.2
   - C:\Python27\python build.py
   - cd ..
   - cd vorbis
+  - set CONAN_REFERENCE=vorbis/1.3.5
   - C:\Python27\python build.py
   - cd ..
   - cd small3d
+  - set CONAN_REFERENCE=small3d/master
   - C:\Python27\python build.py
 
