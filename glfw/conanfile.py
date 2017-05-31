@@ -63,7 +63,7 @@ class GlfwConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        dynlib = '-DBUILD_SHARED_LIBS=ON' if self.options.shared else '-DBUILD_SHARED_LIBS=OFF'
+        dynlib = '-DBUILD_SHARED_LIBS=ON' if self.options.shared and self.settings.os !="Macos" else '-DBUILD_SHARED_LIBS=OFF'
         self.run("cmake %s/%s %s %s -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF" %
                  (self.conanfile_directory, self.ZIP_FOLDER_NAME, cmake.command_line, dynlib))
         self.run("cmake --build %s %s" % (self.conanfile_directory, cmake.build_config))
@@ -83,9 +83,12 @@ class GlfwConan(ConanFile):
                 if self.settings.os == "Linux":
                     self.copy(pattern="*.so*", dst="lib", keep_path=False)
                 elif self.settings.os == "Macos":
-                    self.copy(pattern="*.dylib", dst="lib", keep_path=False)
+                    self.output.warn('On OSX/MacOS linking to the .dylib is problematic. Built .a library.')
+                    self.copy(pattern="*.a", dst="lib", keep_path=False)
             else:
                 self.copy(pattern="*.a", dst="lib", keep_path=False)
+        
+        
 
     def package_info(self):
         if self.settings.compiler == "Visual Studio":
@@ -94,7 +97,7 @@ class GlfwConan(ConanFile):
             else:
                 self.cpp_info.libs = ['glfw3']
         else:
-            if self.options.shared:
+            if self.options.shared and self.settings.os != 'Macos':
                 self.cpp_info.libs = ['glfw']
                 if self.settings.os == "Linux":
                     self.cpp_info.exelinkflags.append("-lrt -lm -ldl")
