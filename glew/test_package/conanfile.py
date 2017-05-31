@@ -18,5 +18,5 @@ class TestGlew(ConanFile):
         self.run(os.sep.join([".","bin", "testGlew"]))
 
     def imports(self):
-        self.copy(pattern="*.dll", dst="bin", src="bin")
-        self.copy(pattern="*.dylib", dst="bin", src="lib")
+        if self.settings.os == "Windows":
+            self.copy(pattern="*.dll", dst="bin", src="bin")
