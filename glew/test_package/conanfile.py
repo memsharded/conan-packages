@@ -2,7 +2,7 @@ from conans import ConanFile, CMake
 import os
 
 channel = os.getenv("CONAN_CHANNEL", "testing")
-username = os.getenv("CONAN_USERNAME", "coding3d")
+username = os.getenv("CONAN_USERNAME", "dimi309")
 
 class TestGlew(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
@@ -18,5 +18,5 @@ class TestGlew(ConanFile):
         self.run(os.sep.join([".","bin", "testGlew"]))
 
     def imports(self):
-        self.copy("*.dll", "bin", "bin")
-        self.copy("*.dylib", "bin", "bin")
+        if self.settings.os == "Windows":
+            self.copy(pattern="*.dll", dst="bin", src="bin")

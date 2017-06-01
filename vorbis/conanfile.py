@@ -11,7 +11,7 @@ class VorbisConan(ConanFile):
     default_options = "shared=False", "fPIC=True"
     url="http://github.com/dimi309/conan-packages"
     description="The VORBIS library"
-    requires = "ogg/1.3.2@coding3d/stable"
+    requires = "ogg/1.3.2@dimi309/stable"
     license="BSD"
     exports = "FindVORBIS.cmake"
 
@@ -95,7 +95,7 @@ class VorbisConan(ConanFile):
                 if self.settings.os == "Macos":
                     self.copy(pattern="*.a", dst="lib", keep_path=False)
                 else:
-                    self.output.warn("Static linking with the library does not work so well. Packaging dynamic version.")
+                    self.output.warn('The package has some issues on Linux when statically linked. Using shared library instead.')
                     self.copy(pattern="*.so*", dst="lib", keep_path=False)
 
     def package_info(self):
@@ -107,4 +107,4 @@ class VorbisConan(ConanFile):
                 self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMTD')
                 self.cpp_info.exelinkflags.append('/NODEFAULTLIB:LIBCMT')
         else:
-            self.cpp_info.libs = ['vorbis', 'vorbisfile', 'vorbisenc']
+            self.cpp_info.libs = ['vorbisfile', 'vorbisenc', 'vorbis']

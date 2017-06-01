@@ -2,7 +2,7 @@ from conans import ConanFile, CMake
 import os
 
 channel = os.getenv("CONAN_CHANNEL", "testing")
-username = os.getenv("CONAN_USERNAME", "coding3d")
+username = os.getenv("CONAN_USERNAME", "dimi309")
 
 class TestGlfw(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
@@ -15,4 +15,9 @@ class TestGlfw(ConanFile):
         self.run("cmake --build . %s" % cmake.build_config)
 
     def test(self):
-        self.run(os.sep.join([".","bin", "test_glfw"]))
+        self.run(os.sep.join(["cd bin && .", "test_glfw"]))
+    
+    def imports(self):
+        if self.settings.os == "Windows":
+            self.copy(pattern="*.dll", dst="bin", src="bin")
+

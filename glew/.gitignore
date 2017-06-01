@@ -1,4 +1,4 @@
-test/build
+test_package/build
 conanfile.pyc
 conaninfo.txt
 conanbuildinfo.cmake
