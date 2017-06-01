@@ -103,26 +103,27 @@ class OggConan(ConanFile):
                 
                 self.run("%s && %s && %s" % (vcvars, cd_build, build_command))
         else:
-            env = AutoToolsBuildEnvironment(self)
-            with tools.environment_append(env.vars):
+            # Later, run_in_windows_bash is executed for Windows builds. The command starts in the directory
+            # of the package, so prefixing it is not necessary and it doesn't work either because of
+            # the backslashes which are contained in self.conanfile_directory, since conanfile_directory
+            # is prepared by conan for Windows in this case.
+            base_path = ("%s/" % self.conanfile_directory) if self.settings.os != "Windows" else ""
+            cd_build = "cd %s%s" % (base_path, self.ZIP_FOLDER_NAME)
 
-                if self.settings.os != "Windows":
+            if self.settings.os == "Windows":
+                run_in_windows_bash(self, "%s && ./configure" % cd_build)
+                self.run("%s && make" % cd_build)
+
+            else:
+                env = AutoToolsBuildEnvironment(self)
+                with tools.environment_append(env.vars):
+
                     env.fpic = self.options.fPIC
 
-                if self.settings.os == "Macos":
-                    old_str = '-install_name \\$rpath/\\$soname'
-                    new_str = '-install_name \\$soname'
-                    replace_in_file("%s/%s/configure" % (self.conanfile_directory, self.ZIP_FOLDER_NAME), old_str, new_str)
-
-                # Later, run_in_windows_bash is executed for Windows builds. The command starts in the directory
-                # of the package, so prefixing it is not necessary and it doesn't work either because of
-                # the backslashes which are contained in self.conanfile_directory, since conanfile_directory
-                # is prepared by conan for Windows in this case.
-                base_path = ("%s/" % self.conanfile_directory) if self.settings.os != "Windows" else ""
-
-                cd_build = "cd %s%s" % (base_path, self.ZIP_FOLDER_NAME)
-
-                with tools.environment_append(env.vars):
+                    if self.settings.os == "Macos":
+                        old_str = '-install_name \\$rpath/\\$soname'
+                        new_str = '-install_name \\$soname'
+                        replace_in_file("%s/%s/configure" % (self.conanfile_directory, self.ZIP_FOLDER_NAME), old_str, new_str)
                     
                     # This solves an automake version mismatch problem
                     if self.settings.os == "Linux":
@@ -131,12 +132,8 @@ class OggConan(ConanFile):
                         self.run("%s && aclocal" % cd_build)
                         self.run("%s && automake" % cd_build)
 
-                    if self.settings.os == "Windows":
-                        run_in_windows_bash(self, "%s && ./configure" % cd_build)
-                        self.run("%s && make" % cd_build)
-                    else:
-                        run_in_windows_bash(self, "%s && ./configure" % cd_build)
-                        self.run("%s && make" % cd_build)
+                    self.run("%s && ./configure" % cd_build)
+                    self.run("%s && make" % cd_build)
 
     def package(self):
         self.copy("FindOGG.cmake", ".", ".")
